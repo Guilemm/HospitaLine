@@ -6,6 +6,7 @@ public class Patient {
 	{
 		System.out.println("bum");
 		System.out.println("hi");
+		System.out.println("Good morning");
 	}
 
 	
