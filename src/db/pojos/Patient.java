@@ -10,6 +10,7 @@ public class Patient {
 		//hola
 		//buenos dias
 		//JIJIJIJIJ
+		System.out.println("F");
 	}
 
 }
