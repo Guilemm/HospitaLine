@@ -6,6 +6,8 @@ public class Patient {
 	{
 		System.out.println("bum");
 		
+		System.out.println("Diana");
+		
 		//hola
 	}
 
