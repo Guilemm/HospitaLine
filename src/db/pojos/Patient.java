@@ -8,6 +8,7 @@ public class Patient {
 		System.out.println("Diana");
 		
 		//hola
+		//buenos dias
 
 	}
 
