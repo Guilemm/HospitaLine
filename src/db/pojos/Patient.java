@@ -11,6 +11,7 @@ public class Patient {
 		//buenos dias
 		//JIJIJIJIJ
 		System.out.println("yyyy");
+		System.out.println("34");
 	}
 
 }
