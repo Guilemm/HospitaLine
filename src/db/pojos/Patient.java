@@ -17,6 +17,7 @@ public class Patient {
 			String query= "INSERT INTO medsupply ( name, quantity) VALUES( 'hola', 7.0)";
 			stmt.executeUpdate(query);
 			stmt.close();
+			//hola
 			System.out.println();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
