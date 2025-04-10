@@ -14,7 +14,7 @@ public class Patient {
 			Connection c= DriverManager.getConnection("jdbc:sqlite:Databasestep5.db");
 			//c.createStatement().execute();
 			Statement stmt=c.createStatement();
-			String query= "INSERT INTO medsupply ( name, quantity) VALUES( 'hol0', 7.0)";
+			String query= "INSERT INTO medsupply ( name, quantity) VALUES( 'hola', 7.0)";
 			stmt.executeUpdate(query);
 			stmt.close();
 			System.out.println();
@@ -27,5 +27,6 @@ public class Patient {
 			System.out.println("guasaaa");
 			e.printStackTrace();
 		}
+		git diff
 	}
 }
