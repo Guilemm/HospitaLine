@@ -27,6 +27,5 @@ public class Patient {
 			System.out.println("guasaaa");
 			e.printStackTrace();
 		}
-		git diff
 	}
 }
