@@ -2,6 +2,9 @@ package hospital.jdbc;
 
 import java.io.BufferedReader;
 
+
+
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -16,13 +19,11 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
-import db.pojos.Appointments;
+import db.pojos.Appointment;
 import db.pojos.Doctor;
-import db.pojos.MedicalRecords;
+import db.pojos.MedicalRecord;
 import db.pojos.Patient;
-import db.pojos.Sex;
 import hospital.ifaces.HospitalManager;
-import sample.db.pojos.Department;
 
 public class HospitalManagerImplements implements HospitalManager {
 
@@ -115,6 +116,11 @@ public class HospitalManagerImplements implements HospitalManager {
 		}
 		catch(Exception e)
 		{
+			if(e.getMessage().contains("already exist"))
+			{
+				return;
+			}
+			System.out.println("\nDatabase Error");
 			e.printStackTrace();
 		}
 		
@@ -426,7 +432,7 @@ public class HospitalManagerImplements implements HospitalManager {
 					int experience=rs1.getInt("experience");
 					String address=rs1.getString("address");
 					String department=rs1.getString("department");
-					Sex sex=Sex.valueOf(rs1.getString("sex"));
+					String sex=rs1.getString("sex");
 				
 					Doctor doqui=new Doctor(id, email, name, utilDate, experience, address, department, sex);
 					System.out.println(doqui.toString());//En el toString del doctor sale la password, eso quitarlo, al no tener sentido o hacer otro toString sin la password?
@@ -449,7 +455,7 @@ public class HospitalManagerImplements implements HospitalManager {
 				int experience=rs.getInt("experience");
 				String address=rs.getString("address");
 				String department=rs.getString("department");
-				Sex sex=Sex.valueOf(rs.getString("sex"));
+				String sex=rs.getString("sex");
 			
 				Doctor doqui=new Doctor(id, email, name, utilDate, experience, address, department, sex);
 				System.out.println(doqui.toString());//En el toString del doctor sale la password, eso quitarlo, al no tener sentido o hacer otro toString sin la password?
@@ -500,7 +506,7 @@ public class HospitalManagerImplements implements HospitalManager {
 					long dobMillis = rs1.getLong("dob");
 					Date utilDate = new Date(dobMillis);
 					String address=rs1.getString("address");
-					Sex sex=Sex.valueOf(rs1.getString("sex"));
+					String sex=rs1.getString("sex");
 				
 					Patient pati=new Patient(id, name, email, address, sex, utilDate);
 					System.out.println(pati.toString());
@@ -521,7 +527,7 @@ public class HospitalManagerImplements implements HospitalManager {
 				long dobMillis = rs.getLong("dob");
 				Date utilDate = new Date(dobMillis);
 				String address=rs.getString("address");
-				Sex sex=Sex.valueOf(rs.getString("sex"));
+				String sex=rs.getString("sex");
 			
 				Patient pati=new Patient(id, name, email, address, sex, utilDate);
 				System.out.println(pati.toString());
@@ -571,10 +577,10 @@ public class HospitalManagerImplements implements HospitalManager {
 					int id = rs.getInt("id");
 					String diagnose = rs.getString("diagnose");
 					String treatment = rs.getString("treatment");
-					long dobMillis = rs.getLong("dob");
+					long dobMillis = rs.getLong("date");
 					Date utilDate = new Date(dobMillis);
 					int medprescid=rs.getInt("medprescid");//El patient id no es necesario que lo coja, ya que se obvia al estar cogiendo los medrecords de un patient concreto
-					MedicalRecords medreco = new MedicalRecords(id, diagnose, treatment, utilDate, medprescid, patid);//Para que esto funcione se necesita contructor de MedicalRecords
+					MedicalRecord medreco = new MedicalRecord(id, diagnose, treatment, utilDate, medprescid, patid);//Para que esto funcione se necesita contructor de MedicalRecords
 					System.out.println(medreco);
 					
 				}
@@ -587,16 +593,16 @@ public class HospitalManagerImplements implements HospitalManager {
 				System.out.println("Select the medical record you want to see, by indicating its id");
 				int idmed=Integer.parseInt(br.readLine());
 				Statement stmt2 = c.createStatement();
-				String sql2="SELECT * FROM medrecords WHERE patientid = "+patid+"AND id="+idmed;
+				String sql2="SELECT * FROM medrecords WHERE patientid = "+patid+" AND id="+idmed;
 				ResultSet rs2= stmt2.executeQuery(sql2);
 				int id = rs2.getInt("id");
 				String diagnose = rs2.getString("diagnose");
 				String treatment = rs2.getString("treatment");
-				long dobMillis = rs2.getLong("dob");
+				long dobMillis = rs2.getLong("date");
 				Date utilDate = new Date(dobMillis);
 				int medprescid=rs2.getInt("medprescid");//El patient id no es necesario que lo coja, ya que se obvia al estar cogiendo los medrecords de un patient concreto
 				
-				MedicalRecords medreco2 = new MedicalRecords(id, diagnose, treatment, utilDate, medprescid, patid);//Para que esto funcione se necesita contructor de MedicalRecords
+				MedicalRecord medreco2 = new MedicalRecord(id, diagnose, treatment, utilDate, medprescid, patid);//Para que esto funcione se necesita contructor de MedicalRecords
 				System.out.println(medreco2);
 				
 				rs2.close();

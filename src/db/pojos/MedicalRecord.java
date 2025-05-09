@@ -1,23 +1,27 @@
 package db.pojos;
 
+import java.io.Serializable;
+
+
 import java.sql.Date;
+import java.util.Objects;
 
 /*
  * Represents a patient's medical history or visit record
  */
-public class MedicalRecords {
+public class MedicalRecord implements Serializable {
 
-	private int id; //unique id for the medical record
-	private int patientID; //ID of the patient (foreign key)
+	private Integer id; //unique id for the medical record
+	private Integer patientID; //ID of the patient (foreign key)
 	private String diagnosis; //Diagnosis made during the visit
 	private String treatment;  //treatment prescribed
 	private Date date;  //date of the medical visit
-	private int medicineID;  //id of the medicine used (foreign key)
+	private Integer medicineID;  //id of the medicine used (foreign key)
 	
 	/*
 	 * Constructor
 	 */
-	public MedicalRecords(int id, int patientID, String diagnosis, String treatment, Date date, int medicineID) {
+	public MedicalRecord(int id, String diagnosis, String treatment, Date date, int medicineID, int patientID) {
         this.id = id;
         this.patientID = patientID;
         this.diagnosis = diagnosis;
@@ -26,39 +30,32 @@ public class MedicalRecords {
         this.medicineID = medicineID;
 	}
 	
-	/*
-	 * Compares this MedicalRecord object with another.
-	 * The comparison is based on the 'id' field since it represents
-	 * a unique identifier for medical records.
-	 *
-	 * @param obj The object to compare with this instance
-	 * @return true if the objects are equal (same ID), false otherwise
-	 */
-	@Override
-	public boolean equals(Object obj) {
-	    if (this == obj) return true;
-	    if (obj == null || getClass() != obj.getClass()) return false;
-
-	    MedicalRecords other = (MedicalRecords) obj;
-	    return id == other.id;
-	}
-
-	/*
-	 * Generates a hashCode value for this object (medicalRecord).
-	 * The hash is calculated only based on the 'id' field to maintain
-	 * consistency with the equals() method.
-	 *
-	 * @return An integer value representing the hash code
-	 */
-	@Override
-	public int hashCode() {
-	    return Integer.hashCode(id);
-	}
 	
 	
 	// Getters
 
-    public int getId() {
+    @Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MedicalRecord other = (MedicalRecord) obj;
+		return id == other.id;
+	}
+
+
+
+	public int getId() {
         return id;
     }
 
@@ -108,6 +105,15 @@ public class MedicalRecords {
         this.medicineID = medicineID;
     }
 
+
+
+	@Override
+	public String toString() {
+		return "MedicalRecord [id=" + id + ", patientID=" + patientID + ", diagnosis=" + diagnosis + ", treatment="
+				+ treatment + ", date=" + date + ", medicineID=" + medicineID + "]";
+	}
+
 	
+    
 	
 }

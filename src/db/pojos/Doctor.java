@@ -18,19 +18,19 @@ public class Doctor implements Serializable{
 	private String name;
 	private String email;
 	private Date dob;
-	private int experience;
+	private Integer experience;
 	private String address;
 	private String department;
-	private Sex sex; //Puede ser que esto sea mejor ponerlo como String
-	private List<Appointments> appointments;
+	private String sex; //Puede ser que esto sea mejor ponerlo como String
+	private List<Appointment> appointments;
 	
 	public Doctor()
 	{
 		super();
-		appointments = new ArrayList<Appointments>();
+		appointments = new ArrayList<Appointment>();
 	}
 	
-	public Doctor(int id, String email, String name, Date dob, int experience, String address, String department, Sex sex)
+	public Doctor(int id, String email, String name, Date dob, int experience, String address, String department, String sex)
 	{
 		this.id=id;
 		this.email=email;
@@ -43,6 +43,17 @@ public class Doctor implements Serializable{
 	}
 	
 	
+
+	public Doctor(String name, String email, Date dob, Integer experience, String address, String department, String sex) {
+		super();
+		this.name = name;
+		this.email = email;
+		this.dob = dob;
+		this.experience = experience;
+		this.address = address;
+		this.department = department;
+		this.sex = sex;
+	}
 
 	public String getEmail() {
 		return email;
@@ -88,16 +99,16 @@ public class Doctor implements Serializable{
 	public void setDepartment(String department) {
 		this.department = department;
 	}
-	public Sex getSex() {
+	public String getSex() {
 		return sex;
 	}
-	public void setSex(Sex sex) {
+	public void setSex(String sex) {
 		this.sex = sex;
 	}
-	public List<Appointments> getAppointments() {
+	public List<Appointment> getAppointments() {
 		return appointments;
 	}
-	public void setAppointments(List<Appointments> appointments) {
+	public void setAppointments(List<Appointment> appointments) {
 		this.appointments = appointments;
 	}
 	

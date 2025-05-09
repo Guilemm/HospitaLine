@@ -50,11 +50,11 @@ public class UserManagerImplements implements UserManager
 
 
 	@Override
-	public User login(String username, String password) {
+	public User login(String email, String password) {
 		try
 		{
-			Query q=em.createNativeQuery("SELECT * FROM users WHERE name = ? AND password = ?", User.class);//Esto para ver si esta el user ya registrado 
-			q.setParameter(1, username);
+			Query q=em.createNativeQuery("SELECT * FROM users WHERE email = ? AND password = ?", User.class);//Esto para ver si esta el user ya registrado, al buscar en la base de datos da igual que el nombre este en mayusculas
+			q.setParameter(1, email);
 			q.setParameter(2, password);
 			User user= (User) q.getSingleResult();//Por que se supone que solo ha de haber un user con estas caracteristicas, al ser el username unique
 			return user;

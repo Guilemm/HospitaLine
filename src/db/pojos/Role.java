@@ -44,6 +44,14 @@ public class Role implements Serializable{
 			this.users.add(user);
 		}
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	
+	
+	
 	
 
 }
