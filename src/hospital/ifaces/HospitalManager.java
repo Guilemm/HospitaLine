@@ -43,5 +43,5 @@ public interface HospitalManager {
 	
 	public void AddPatient(Patient pati);
 	
-	public void AddDoctor(Doctor doc);
+	public void AddDoctor(Doctor doc);//v
 }

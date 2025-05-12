@@ -17,5 +17,5 @@ public interface UserManager {
 	
 	public void register(User user);
 	
-	public void assignRole(User user, Role role);
+	public void assignRole(User user, Role role);//v
 }

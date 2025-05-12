@@ -18,7 +18,7 @@ public class MedicineSupply implements Serializable{
 	    private Integer quantity; //amount of medicine in stock
 	
 	    /*
-	     * Constructor
+	     * Constructor, coment
 	     */
 	    public MedicineSupply(String name, int quantity) {
 	        this.name = name;

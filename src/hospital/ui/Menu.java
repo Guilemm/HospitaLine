@@ -404,7 +404,7 @@ public class Menu {
 			if(user1.getRole().getName().equals("doctor"))
 			{
 				boolean keepsesiondoc=true;
-				while(keepsesiondoc)
+				while(keepsesiondoc)//v
 				{
 					System.out.println("Hello Dr/a."+user1.getUsername()+", what do you want to do: \n1) Appointments \n2) Medical records \n3) Medicine supply \n4) Exit");
 					int option=Integer.parseInt(br.readLine());

@@ -844,7 +844,7 @@ public class HospitalManagerImplements implements HospitalManager {
 			e.printStackTrace();
 		} catch (IOException e) {
 			
-			e.printStackTrace();
+			e.printStackTrace();//v
 		}
 	}
 	

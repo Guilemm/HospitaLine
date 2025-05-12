@@ -10,7 +10,7 @@ import java.util.Objects;
  */
 public class Appointment implements Serializable{
 	private Integer id;
-	private Integer patientId;
+	private Integer patientId;//coment
 	private Integer doctorId;
 	private Date date;
 

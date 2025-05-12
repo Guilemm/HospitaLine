@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 public class MedicalRecord implements Serializable {
 
-	private Integer id; //unique id for the medical record
+	private Integer id; //unique id for the medical record, coment
 	private Integer patientID; //ID of the patient (foreign key)
 	private String diagnosis; //Diagnosis made during the visit
 	private String treatment;  //treatment prescribed
