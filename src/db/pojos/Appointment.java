@@ -18,13 +18,25 @@ public class Appointment implements Serializable{
 	/*
 	 * Constructor
 	 */
-	public Appointment(int id, int patientId, int doctorId, Date doctroId, Date date) {
+	public Appointment(int id, int patientId, int doctorId, Date date) {
 		this.id = id;
 		this.patientId = patientId;
 		this.doctorId = doctorId;
 		this.date = date;
 	}
 	
+	
+	
+
+	public Appointment(int patientId, int doctorId, Date date) {
+		super();
+		this.patientId = patientId;
+		this.doctorId = doctorId;
+		this.date = date;
+	}
+
+
+
 
 	// Getters y Setters
     public int getId() {

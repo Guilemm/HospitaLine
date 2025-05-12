@@ -2,12 +2,17 @@ package hospital.ui;
 
 import java.io.BufferedReader;
 
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 
+import db.pojos.Appointment;
 import db.pojos.Doctor;
+import db.pojos.MedicalRecord;
 import db.pojos.Patient;
 import db.pojos.Role;
 import db.pojos.User;
@@ -84,8 +89,6 @@ public class Menu {
 			String email=br.readLine();
 			System.out.println("\nEnter your name: ");
 			String name=br.readLine();
-			System.out.println("\nEnter your name: ");
-			String username=br.readLine();
 			System.out.println("\nEnter your password: ");
 			String password=br.readLine();
 			System.out.println("\nEnter your address: ");
@@ -109,12 +112,12 @@ public class Menu {
 			System.out.println("\nExperience (years): ");
 			int experience=Integer.parseInt(br.readLine());
 			
-			User user=new User(username, password, email);
-			Doctor doc=new Doctor(email, name, Date.valueOf(dobstr), experience, address, department, sexstr);
+			User user=new User(name, password, email);
+			Doctor doc=new Doctor(name, email, Date.valueOf(dobstr), experience, address, department, sexstr);
 			userman.register(user);
 			Role role=userman.getRole("doctor");
 			userman.assignRole(user, role);
-			//Aqui iría hospiman.adddoctor(), solo con la parte de la database
+			hospiman.AddDoctor(doc);
 			
 		}
 		catch (NumberFormatException e) {
@@ -122,6 +125,20 @@ public class Menu {
 			e.printStackTrace();
 		} catch (IOException e) {
 			
+			e.printStackTrace();
+		}
+		catch(DateTimeParseException e)
+		{
+			System.out.println("\nInvalid date format, use (yyyy-MM-dd)");
+		}
+		catch(Exception e)//Esto para cuando haya un username igual
+		{
+			if(e.getMessage().contains("(UNIQUE constraint failed: users.EMAIL)"))
+			{
+				System.out.println("\nThis email already exists in the database");
+				return;
+			}
+			System.out.println("\nError");
 			e.printStackTrace();
 		}
 	}
@@ -135,8 +152,6 @@ public class Menu {
 			String email=br.readLine();
 			System.out.println("\nEnter your name: ");
 			String name=br.readLine();
-			System.out.println("\nEnter your username: ");
-			String username=br.readLine();
 			System.out.println("\nEnter your password: ");
 			String password=br.readLine();
 			System.out.println("\nEnter your address: ");
@@ -155,11 +170,12 @@ public class Menu {
 				System.out.println("\nInvalid option");
 				return;
 			}
-			User user=new User(username, password, email);
-			Patient pat=new Patient(name, email, address, sexstr, Date.valueOf(dobstr));
+			User user=new User(name, password, email);
+			Patient pati=new Patient(name, email, address, sexstr, Date.valueOf(dobstr));
 			userman.register(user);
 			Role role=userman.getRole("patient");
 			userman.assignRole(user, role);
+			hospiman.AddPatient(pati);
 		}
 		catch (NumberFormatException e) {
 			
@@ -168,10 +184,20 @@ public class Menu {
 			
 			e.printStackTrace();
 		}
-		/*catch( e)//Esto para cuando haya un username igual
+		catch(DateTimeParseException e)
 		{
-			System.out.println("\nUsername already chose, choose another");
-		}*/
+			System.out.println("\nInvalid date format, use (yyyy-MM-dd)");
+		}
+		catch(Exception e)//Esto para cuando haya un username igual
+		{
+			if(e.getMessage().contains("(UNIQUE constraint failed: users.EMAIL)"))
+			{
+				System.out.println("\nThis email already exists in the database");
+				return;
+			}
+			System.out.println("\nError");
+			e.printStackTrace();
+		}
 	}
 	
 	public static void login()
@@ -186,6 +212,7 @@ public class Menu {
 			User user1= userman.login(email, password);//Si el user es null va directo al catch NullPointerException
 			if(user1.getRole().getName().equals("patient"))
 			{
+				Patient pat=hospiman.getPatientByEmail(user1.getEmail());
 				boolean keepsesionpat=true;
 				while(keepsesionpat)
 				{
@@ -199,25 +226,74 @@ public class Menu {
 						switch(opcion)
 						{
 						case 1:
-							//hospiman.ViewDoctorInfo();//Hacer que este sea para ver a todos los doctors
-							System.out.println("\nFrom this doctors, choose one for you appointment (indicate its id)");
-							int docid=Integer.parseInt(br.readLine());
-							//Pedir aqui datos del appointment
-							//hospiman.BookAppointment();//Pasarle como argumento el doctor que he creado
+							ArrayList<Doctor> docs=hospiman.ViewAllDoctors();
+							if(docs.isEmpty())
+							{
+								System.out.println("\nThere are no doctors to book an appointment with right now");
+							}
+							else
+							{
+								int i=0;
+								while(i<docs.size())
+								{
+									System.out.println(docs.get(i).toString());
+									i++;
+								}
+								System.out.println("\nFrom this doctors, choose one for you appointment (indicate its id)");
+								int docid=Integer.parseInt(br.readLine());
+								System.out.println("\nIndicate the date of the appointment (yyyy-MM-dd): ");
+								String datestr=br.readLine();
+								if(LocalDate.parse(datestr).isBefore(LocalDate.now()))
+								{
+									System.out.println("\nInvalid option");
+									return;
+								}
+								
+								Appointment apo=new Appointment(pat.getId(), docid, Date.valueOf(datestr));
+								hospiman.BookAppointment(apo);
+							}
+							
+						
 							break;
 						case 2:
-							//hospiman.getAppointments();//Para obtener los appointments de este patient
-							System.out.println("\nWhich of your appointments do you want to cancel?");
-							int apcancel=Integer.parseInt(br.readLine());
-							//hospiman.EliminateAppointment();//Hacer que como argumento coja un appointment, y el id del paciente que este usando este metodo
+							ArrayList<Appointment> apos=hospiman.getAppointmentsPatient(pat.getId());
+							if(apos.isEmpty())
+							{
+								System.out.println("\nYou have no appointments");
+							}
+							else
+							{
+								int r=0;
+								while(r<apos.size())
+								{
+									System.out.println(apos.get(r).toString());
+									r++;
+								}
+								System.out.println("\nWhich one of your appointments do you want to cancel? (Indicate the id of the appointment)");
+								int apcancel=Integer.parseInt(br.readLine());
+								hospiman.EliminateAppointment(apcancel, pat.getId());
+							}
 							
 							break;
 						case 3:
-							//hospiman.getAppointments();//Para obtener los appointments de este patient
-							System.out.println("\nWhich of your appointments do you want to update?");
-							int apup=Integer.parseInt(br.readLine());
-							//Pedir aqui los datos de la modificacion
-							//hospiman.ModifyAppointment();//Hacer que se le pase el appointment id y el id de este patient
+							ArrayList<Appointment> aposup=hospiman.getAppointmentsPatient(pat.getId());
+							if(aposup.isEmpty())
+							{
+								System.out.println("\nYou have no appointments");
+							}
+							else
+							{
+								int k=0;
+								while(k<aposup.size())
+								{
+									System.out.println(aposup.get(k).toString());
+									k++;
+								}
+								System.out.println("\nWhich one of your appointments do you want to update? (Indicate the id of the appointment)");
+								int apupid=Integer.parseInt(br.readLine());
+								hospiman.ModifyAppointment(apupid, pat.getId());
+							}
+			
 							break;
 						default:
 							System.out.println("\nInvalid option");
@@ -230,9 +306,35 @@ public class Menu {
 						switch(op)
 						{
 						case 1:
-							//hospiman.ViewDoctorInfo();//Este metodo separarlo en ver todo y ver solo uno entre estos dos casos
+							ArrayList<Doctor> docs=hospiman.ViewAllDoctors();
+							if(docs.isEmpty())
+							{
+								System.out.println("\nThere are no doctors right now");
+							}
+							else
+							{
+								int f=0;
+								while(f<docs.size())
+								{
+									System.out.println(docs.get(f).toString());
+									f++;
+								}
+								
+							}
+							
 							break;
 						case 2:
+							System.out.println("\nIntroduce the id of the doctor you want to see: ");
+							int docidsee=Integer.parseInt(br.readLine());
+							Doctor docsee=hospiman.ViewDoctorInfo(docidsee);
+							if(docsee.getEmail()==null)
+							{
+								System.out.println("\nThere is no such doctor");
+							}
+							else
+							{
+								System.out.println(docsee.toString());
+							}
 							
 							break;
 						default:
@@ -240,18 +342,48 @@ public class Menu {
 						}
 						break;
 					case 3:
-						System.out.println("\nDo you want to see: \n1) All your medical records \n2) Just one \n 3) Claim medicine from a medical record");
+						System.out.println("\nDo you want to see: \n1) All your medical records \n2) Just one \n3) Claim medicine from a medical record");
 						int opc=Integer.parseInt(br.readLine());
 						switch(opc)
 						{
 						case 1:
-							//Pedir aqui nada y enseñar todos sus medrecords
+							ArrayList<MedicalRecord> medrecs=hospiman.ViewAllMedicalRecords(pat.getId());
+							if(medrecs.isEmpty())
+							{
+								System.out.println("\nYou have no medical records");
+							}
+							else
+							{
+								int y=0;
+								while(y<medrecs.size())
+								{
+									System.out.println(medrecs.get(y).toString());
+									y++;
+								}
+							}
+							
+							
 							break;
 						case 2:
-							//Pedir aqui el id del medical record que quiere ver, y pasarselo al metodo
+							System.out.println("\nWhich one of your Mediacl Records do you want to see? (Specify the id): ");
+							int medrecid=Integer.parseInt(br.readLine());
+							MedicalRecord medrec=hospiman.ViewOneMedicalRecord(medrecid, pat.getId());
+							if(medrec.getDiagnosis()==null)
+							{
+								System.out.println("\nThis medical record, does not exist");
+							}
+							else
+							{
+								System.out.println(medrec.toString());
+							}
+							
+							
 							break;
 						case 3:
-							//Aqui iria el metodo claim medicine
+							System.out.println("\nWhich one of your Medical Records do you want to claim medicine from? (Specify the id of the Medical Record): ");
+							int medrecidclaim=Integer.parseInt(br.readLine());
+							hospiman.ClaimMedicine(medrecidclaim, pat.getId());
+							
 							break;
 						default:
 							System.out.println("\nInvalid option");

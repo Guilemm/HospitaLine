@@ -53,6 +53,12 @@ public class User implements Serializable{
 		return username;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	
+
 	
 	
 }

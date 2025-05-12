@@ -2,9 +2,6 @@ package hospital.jdbc;
 
 import java.io.BufferedReader;
 
-
-
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -18,6 +15,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import db.pojos.Appointment;
 import db.pojos.Doctor;
@@ -143,345 +142,415 @@ public class HospitalManagerImplements implements HospitalManager {
 	}
 	
 	@Override
-	public void AddPatient()
+	public ArrayList<Doctor> ViewAllDoctors()
 	{
 		try
 		{
-			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("\nName: ");
-			String name=br.readLine();
-			System.out.println("\nAddress: ");
-			String address=br.readLine();
-			System.out.println("\nEmail: ");
-			String email=br.readLine();
-			System.out.println("\nSex: M or F");
-			String sexstr=br.readLine();
-			if((!sexstr.equals("M"))&&(!sexstr.equals("F")))
+			Statement stmt1=c.createStatement();
+			String sql1="SELECT * FROM doctors";
+			ResultSet rs1=stmt1.executeQuery(sql1);
+			ArrayList<Doctor> docs=new ArrayList<Doctor>();
+			while(rs1.next())
 			{
-				System.out.println("\nInvalid option");
-				return;
-			}
-			System.out.println("\nDate of birth (yyyy-MM-dd): ");
-			String dobstr=br.readLine();
-			if(LocalDate.parse(dobstr).isAfter(LocalDate.now()))
-			{
-				System.out.println("\nInvalid option");
-				return;
-			}
-			//El patient y el doctor no deben tener la password
-			
-			String sql="INSERT INTO patients(email, name, dob, address, sex) VALUES (?,?,?,?,?)";
-			PreparedStatement prep=c.prepareStatement(sql);
-			prep.setString(1,  email);
-			prep.setString(2,  name);
-			prep.setDate(3,  Date.valueOf(dobstr));
-			prep.setString(4,  address);
-			prep.setString(5,  sexstr);
-			prep.executeUpdate();
-			prep.close();
-			
-			
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-		}
-        catch (NumberFormatException e) {
-			
-			e.printStackTrace();
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-		catch (DateTimeParseException e) {
-            System.out.println("\nInvalid date. Use the format (yyyy-MM-dd)");
-		}
-	}
-	
-	@Override
-	public void AddDoctor()
-	{
-		try
-		{
-			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("\nName: ");
-			String name=br.readLine();
-			System.out.println("\nAddress: ");
-			String address=br.readLine();
-			System.out.println("\nEmail: ");
-			String email=br.readLine();
-			System.out.println("\nSex: M or F");
-			String sexstr=br.readLine();
-			if((!sexstr.equals("M"))&&(!sexstr.equals("F")))
-			{
-				System.out.println("\nInvalid option");
-				return;
-			}
-			System.out.println("\nDate of birth (yyyy-MM-dd): ");
-			String dobstr=br.readLine();
-			if(LocalDate.parse(dobstr).isAfter(LocalDate.now()))
-			{
-				System.out.println("\nInvalid option");
-				return;
-			}
-			System.out.println("\nDepartment: ");
-			String department=br.readLine();
-			System.out.println("\nExperience (years): ");
-			int experience=Integer.parseInt(br.readLine());
-			
-			String sql="INSERT INTO doctors(email, name, dob, address, sex, department, experience) VALUES (?,?,?,?,?,?,?)";
-			PreparedStatement prep=c.prepareStatement(sql);
-			prep.setString(1,  email);
-			prep.setString(2,  name);
-			prep.setDate(3,  Date.valueOf(dobstr));
-			prep.setString(4,  address);
-			prep.setString(5,  sexstr);
-			prep.setString(6, department);
-			prep.setInt(7, experience);
-			prep.executeUpdate();
-			prep.close();
-			
-			
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-		}
-        catch (NumberFormatException e) {
-			
-			e.printStackTrace();
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-		catch (DateTimeParseException e) {
-            System.out.println("\nInvalid date. Use the format (yyyy-MM-dd)");
-		}
-	}
-	
-	@Override
-    public void BookAppointment()//Esto es un insert, si ya viene el appointment, no es necesario pedir los datos de este, voy a permitir por el momento que hayan appointments iguales (solo diferenciados por el id)
-    {
-		try
-		{
-			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("\nIndicate the id of the patient: ");
-			int patid=Integer.parseInt(br.readLine());
-			System.out.println("\nIndicate the id of the doctor: ");
-			int docid=Integer.parseInt(br.readLine());
-			System.out.println("\nIndicate the date of the appointment (yyyy-MM-dd): ");
-			String datestr=br.readLine();
-			if(LocalDate.parse(datestr).isBefore(LocalDate.now()))
-			{
-				System.out.println("\nInvalid option");
-				return;
-			}
-			
-			String sql = "INSERT INTO appointments (patientid, doctorid, date)"
-					+ "VALUES (?,?,?);";
-			PreparedStatement prep=c.prepareStatement(sql);
-			prep.setInt(1, patid);
-			prep.setInt(2, docid);
-			prep.setDate(3, Date.valueOf(datestr));
-			prep.executeUpdate();
-			prep.close();
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-		}
-        catch (NumberFormatException e) {
-			
-			e.printStackTrace();
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-		catch (DateTimeParseException e) {
-            System.out.println("\nInvalid date. Use the format (yyyy-MM-dd)");
-		}
-    }
-	
-	@Override
-	public void EliminateAppointment()//Esto es un delete, cuando la id que le doy no existe no dice nada, no se si habria que arreglar eso
-	{
-		try
-		{
-			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("\nIndicate the appointment you want to delete, by indicating its id: ");
-			int apoid=Integer.parseInt(br.readLine());
-			String sql = "DELETE FROM appointments WHERE id=?";
-			PreparedStatement prep = c.prepareStatement(sql);
-			prep.setInt(1, apoid);
-			prep.executeUpdate();
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-		}
-        catch (NumberFormatException e) {
-			
-			e.printStackTrace();
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-	}
-	
-	@Override
-	public void ModifyAppointment() //Por el momento este modify appointment va a ser el del patient(Solo se podra modificar o el doctorid o el date). Esto un Update, en este metodo habria que ver segun seas el doctor o el patient, ademas de poder cambiar la fecha, cambiar el paciente o el doctor respectivamente, alomejor hay que hacer dos metodos de modify uno para el patient y otro para el doctor
-	{
-		try
-		{
-			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("\nIndicate the id of the appointment you want to modify: ");
-			int apoid=Integer.parseInt(br.readLine());
-			System.out.println("\nWhat do you want to do:\nChange the doctor you will have the appointment with 1)\nChange the date of the appointment 2)\nDo both 3)");
-			int choose=Integer.parseInt(br.readLine());
-			switch(choose)
-			{
-			case 1:
-				System.out.println("\nInsert the id of the new doctor: ");
-				int docid=Integer.parseInt(br.readLine());
-				String sql="UPDATE appointments SET doctorid = ? WHERE id = ?";
-				PreparedStatement prep=c.prepareStatement(sql);
-				prep.setInt(1,  docid);
-				prep.setInt(2,  apoid);
-				prep.executeUpdate();
-				prep.close();
-				break;
-			case 2:
-				System.out.println("\nSpecify the new date (yyyy-MM-dd): ");
-				String datestr=br.readLine();
-				if(LocalDate.parse(datestr).isBefore(LocalDate.now()))
-				{
-					System.out.println("\nInvalid option");
-					return;
-				}
-				String sql1="UPDATE appointments SET date = ? WHERE id = ?";
-				PreparedStatement prep1=c.prepareStatement(sql1);
-				prep1.setDate(1,  Date.valueOf(datestr));
-				prep1.setInt(2,  apoid);
-				prep1.executeUpdate();
-				prep1.close();
-				
-				break;
-			case 3:
-				System.out.println("\nInsert the id of the new doctor: ");
-				int docid2=Integer.parseInt(br.readLine());
-				System.out.println("\nSpecify the new date (yyyy-MM-dd): ");
-				String datestr2=br.readLine();
-				if(LocalDate.parse(datestr2).isBefore(LocalDate.now()))
-				{
-					System.out.println("\nInvalid option");
-					return;
-				}
-				String sql2="UPDATE appointments SET doctorid = ?, date =? WHERE id = ?";
-				PreparedStatement prep2=c.prepareStatement(sql2);
-				prep2.setInt(1, docid2);
-				prep2.setDate(2,  Date.valueOf(datestr2));
-				prep2.setInt(3,  apoid);
-				prep2.executeUpdate();
-				prep2.close();
-				
-				break;
-			default:
-				System.out.println("\nInvalid option");
-			}
-			
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-		}
-        catch (NumberFormatException e) {
-			
-			e.printStackTrace();
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-		catch (DateTimeParseException e) {
-            System.out.println("\nInvalid date. Use the format (yyyy-MM-dd)");
-		}
-	}
-	
-	
-	@Override
-	public void ViewDoctorInfo() //Este y el de view patient son SELECT, tambien el de view medrec, es mejor quitar lo de Doctor doc, y que solo reciba la id, o que se le pida la id en el propio metodo, igual seria en patient
-	{
-		try {
-			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("\nDo you want to see information of: \nAll the doctors 1)\nAn specific doctor 2)");
-			int choose=Integer.parseInt(br.readLine());
-			switch(choose)
-			{
-			case 1:
-				Statement stmt1=c.createStatement();
-				String sql1="SELECT * FROM doctors";
-				ResultSet rs1=stmt1.executeQuery(sql1);
-				while(rs1.next())
-				{
-					int id=rs1.getInt("id");
-					String email=rs1.getString("email");
-					String name=rs1.getString("name");
-					long dobMillis = rs1.getLong("dob");
-					Date utilDate = new Date(dobMillis);
-					//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-					//String formattedDate = sdf.format(utilDate);
-					int experience=rs1.getInt("experience");
-					String address=rs1.getString("address");
-					String department=rs1.getString("department");
-					String sex=rs1.getString("sex");
-				
-					Doctor doqui=new Doctor(id, email, name, utilDate, experience, address, department, sex);
-					System.out.println(doqui.toString());//En el toString del doctor sale la password, eso quitarlo, al no tener sentido o hacer otro toString sin la password?
-				}
-				
-				rs1.close();
-				stmt1.close();
-				break;
-			case 2:
-				System.out.println("\nSpecify the id of the doctor you want to see information from: ");
-				int docid=Integer.parseInt(br.readLine());
-				Statement stmt = c.createStatement();
-				String sql = "SELECT * FROM doctors WHERE id = "+docid;
-				ResultSet rs = stmt.executeQuery(sql);
-				int id=rs.getInt("id");
-				String email=rs.getString("email");
-				String name=rs.getString("name");
-				long dobMillis = rs.getLong("dob");
+				int id=rs1.getInt("id");
+				String email=rs1.getString("email");
+				String name=rs1.getString("name");
+				long dobMillis = rs1.getLong("dob");
 				Date utilDate = new Date(dobMillis);
-				int experience=rs.getInt("experience");
-				String address=rs.getString("address");
-				String department=rs.getString("department");
-				String sex=rs.getString("sex");
+				int experience=rs1.getInt("experience");
+				String address=rs1.getString("address");
+				String department=rs1.getString("department");
+				String sex=rs1.getString("sex");
 			
 				Doctor doqui=new Doctor(id, email, name, utilDate, experience, address, department, sex);
-				System.out.println(doqui.toString());//En el toString del doctor sale la password, eso quitarlo, al no tener sentido o hacer otro toString sin la password?
-				rs.close();
-				stmt.close();
-				
-				break;
-			default:
-				System.out.println("\nInvalid option");
+				docs.add(doqui);
 				
 			}
-		} catch (SQLException e) {
+			
+			rs1.close();
+			stmt1.close();
+			return docs;
+		}
+		catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
 		}
         catch (NumberFormatException e) {
 			
 			e.printStackTrace();
-		} catch (IOException e) {
 			
-			e.printStackTrace();
 		}
 		catch(NullPointerException e)//Esta excepcion puede darla si la date es null, o si no hay doctor con esa id
 		{
 			e.printStackTrace();
 		}
+		return null;
+		
+	}
+	
+	@Override
+	public void AddPatient(Patient pati)
+	{
+		try
+		{
+			
+			String sql="INSERT INTO patients(email, name, dob, address, sex) VALUES (?,?,?,?,?)";
+			PreparedStatement prep=c.prepareStatement(sql);
+			prep.setString(1,  pati.getEmail());
+			prep.setString(2,  pati.getName());
+			prep.setDate(3,  pati.getDob());
+			prep.setString(4,  pati.getAdrdress());
+			prep.setString(5,  pati.getSex());
+			prep.executeUpdate();
+			prep.close();
+			
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+        catch (NumberFormatException e) {
+			
+			e.printStackTrace();
+		} 
+		
+	}
+	
+	@Override
+	public void AddDoctor(Doctor doc)
+	{
+		try
+		{
+			String sql="INSERT INTO doctors(email, name, dob, address, sex, department, experience) VALUES (?,?,?,?,?,?,?)";
+			PreparedStatement prep=c.prepareStatement(sql);
+			prep.setString(1,  doc.getEmail());
+			prep.setString(2,  doc.getName());
+			prep.setDate(3,  doc.getDob());
+			prep.setString(4,  doc.getAddress());
+			prep.setString(5,  doc.getSex());
+			prep.setString(6, doc.getDepartment());
+			prep.setInt(7, doc.getExperience());
+			prep.executeUpdate();
+			prep.close();
+			
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+        catch (NumberFormatException e) {
+			
+			e.printStackTrace();
+		} 
+		
+	}
+	
+	@Override
+    public void BookAppointment(Appointment apo)//Esto es un insert, si ya viene el appointment, no es necesario pedir los datos de este, voy a permitir por el momento que hayan appointments iguales (solo diferenciados por el id)
+    {
+		try
+		{
+			String sql = "INSERT INTO appointments (patientid, doctorid, date)"
+					+ "VALUES (?,?,?);";
+			PreparedStatement prep=c.prepareStatement(sql);
+			prep.setInt(1, apo.getPatientId());
+			prep.setInt(2, apo.getDoctorId());
+			prep.setDate(3, apo.getDate());
+			prep.executeUpdate();
+			prep.close();
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+        catch (NumberFormatException e) {
+			
+			e.printStackTrace();
+		}
+		
+    }
+	
+	@Override
+	public Patient getPatientByEmail(String email)
+	{
+		try
+		{
+			Statement stmt=c.createStatement();
+			String sql="SELECT * FROM patients WHERE email LIKE '"+email+"'";
+			ResultSet rs=stmt.executeQuery(sql);
+			int id=rs.getInt("id");
+			String name=rs.getString("name");
+			long dobMillis = rs.getLong("dob");
+			Date utilDate = new Date(dobMillis);
+			String address=rs.getString("address");
+			String sex=rs.getString("sex");
+			stmt.close();
+			rs.close();
+			Patient pat=new Patient(id, name, email, address, sex, utilDate);
+			return pat;
+			
+			
+			
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+        catch (NumberFormatException e) {
+			
+			e.printStackTrace();
+		} 
+		return null;
+	}
+	
+	@Override
+	public ArrayList<Appointment> getAppointmentsPatient(int id)
+	{
+		try
+		{
+			Statement stmt=c.createStatement();
+			String sql="SELECT * FROM appointments WHERE patientid = "+id;
+			ResultSet rs=stmt.executeQuery(sql);
+			ArrayList<Appointment> apos=new ArrayList<Appointment>();
+			while(rs.next())
+			{
+				int apoid=rs.getInt("id");
+				int patid=rs.getInt("patientid");
+				int docid=rs.getInt("doctorid");
+				long dobMillis = rs.getLong("date");
+				Date utilDate = new Date(dobMillis);
+				Appointment apo=new Appointment(apoid, patid, docid, utilDate);
+				apos.add(apo);
+			}
+			
+			stmt.close();
+			rs.close();
+			return apos;
+			
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+        catch (NumberFormatException e) {
+			
+			e.printStackTrace();
+		} 
+		return null;
+	}
+	
+	@Override
+	public void EliminateAppointment(int id, int patid)//Esto es un delete, cuando la id que le doy no existe no dice nada, no se si habria que arreglar eso
+	{
+		try
+		{
+			Statement stmt=c.createStatement();
+			String sqlprov="SELECT * FROM appointments WHERE id="+id+" AND patientid="+patid;
+			ResultSet rs=stmt.executeQuery(sqlprov);
+			if(rs.getDate("date")==null)
+			{
+				System.out.println("\nThis appointment does not exist in your appointments");
+				stmt.close();
+				rs.close();
+			}
+			else
+			{
+				String sql = "DELETE FROM appointments WHERE id=?";
+				PreparedStatement prep = c.prepareStatement(sql);
+				prep.setInt(1, id);
+				prep.executeUpdate();
+				prep.close();
+			}
+			
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+        catch (NumberFormatException e) {
+			
+			e.printStackTrace();
+		} 
+	}
+	
+	@Override
+	public void ModifyAppointment(int apo, int patid) //Por el momento este modify appointment va a ser el del patient(Solo se podra modificar o el doctorid o el date). Esto un Update, en este metodo habria que ver segun seas el doctor o el patient, ademas de poder cambiar la fecha, cambiar el paciente o el doctor respectivamente, alomejor hay que hacer dos metodos de modify uno para el patient y otro para el doctor
+	{
+		try
+		{
+			Statement stmtprov=c.createStatement();
+			String sqlprov="SELECT * FROM appointments WHERE id="+apo+" AND patientid="+patid;
+			ResultSet rsprov=stmtprov.executeQuery(sqlprov);
+			if(rsprov.getDate("date")==null)
+			{
+				System.out.println("\nThis appointment does not exist in your appointments");
+				stmtprov.close();
+				rsprov.close();
+			}
+			else
+			{
+				BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+				Statement stmt=c.createStatement();
+				String sql="SELECT * FROM appointments WHERE id="+apo;
+				ResultSet rs=stmt.executeQuery(sql);
+				System.out.println("\nDoctor id is "+rs.getInt("doctorid")+", if you want to keep it the same press enter, if not type the new id: ");
+				String docidstr=br.readLine();
+				if(!docidstr.isEmpty())
+				{
+					String sql1="UPDATE appointments SET doctorid = ? WHERE id = ?";
+					PreparedStatement prep=c.prepareStatement(sql1);
+					prep.setInt(1,  Integer.parseInt(docidstr));
+					prep.setInt(2,  apo);
+					prep.executeUpdate();
+					prep.close();
+				}
+				long dobMillis = rs.getLong("date");
+				Date utilDate = new Date(dobMillis);
+				System.out.println("\nDate is "+utilDate+", if you want to keep it the same press enter, if not type the new date (yyyy-MM-dd): ");
+				String datestr=br.readLine();
+				if(!datestr.isEmpty())
+				{
+					if(LocalDate.parse(datestr).isBefore(LocalDate.now()))
+					{
+						System.out.println("\nInvalid option");
+						return;
+					}
+					String sql2="UPDATE appointments SET date = ? WHERE id = ?";
+					PreparedStatement prep=c.prepareStatement(sql2);
+					prep.setDate(1,  Date.valueOf(datestr));
+					prep.setInt(2,  apo);
+					prep.executeUpdate();
+					prep.close();
+				}
+				stmt.close();
+				rs.close();
+				
+			}
+			
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+        catch (NumberFormatException e) {
+			
+			e.printStackTrace();
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		catch (DateTimeParseException e) {
+            System.out.println("\nInvalid date. Use the format (yyyy-MM-dd)");
+		}
+	}
+	
+	
+	@Override
+	public Doctor ViewDoctorInfo(int docidsee) //Este y el de view patient son SELECT, tambien el de view medrec, es mejor quitar lo de Doctor doc, y que solo reciba la id, o que se le pida la id en el propio metodo, igual seria en patient
+	{
+		try {
+			
+			Statement stmt = c.createStatement();
+			String sql = "SELECT * FROM doctors WHERE id = "+docidsee;
+			ResultSet rs = stmt.executeQuery(sql);
+			int id=rs.getInt("id");
+			String email=rs.getString("email");
+			String name=rs.getString("name");
+			long dobMillis = rs.getLong("dob");
+			Date utilDate = new Date(dobMillis);
+			int experience=rs.getInt("experience");
+			String address=rs.getString("address");
+			String department=rs.getString("department");
+			String sex=rs.getString("sex");
+		
+			rs.close();
+			stmt.close();
+			
+			Doctor doqui=new Doctor(id, email, name, utilDate, experience, address, department, sex);
+			return doqui;
+				
+		}
+		catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+        catch (NumberFormatException e) {
+			
+			e.printStackTrace();
+		} 
+		catch(NullPointerException e)//Esta excepcion puede darla si la date es null, o si no hay doctor con esa id
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
+	public ArrayList<MedicalRecord> ViewAllMedicalRecords(int patid)
+	{
+		try
+		{
+			Statement stmt=c.createStatement();
+			String sql="SELECT * FROM medrecords WHERE patientid = "+patid;
+			ResultSet rs=stmt.executeQuery(sql);
+			ArrayList<MedicalRecord> medrecs=new ArrayList<MedicalRecord>();
+			while(rs.next())
+			{
+				int id = rs.getInt("id");
+				String diagnose = rs.getString("diagnose");
+				String treatment = rs.getString("treatment");
+				long dobMillis = rs.getLong("date");
+				Date utilDate = new Date(dobMillis);
+				int medprescid=rs.getInt("medprescid");//El patient id no es necesario que lo coja, ya que se obvia al estar cogiendo los medrecords de un patient concreto
+				MedicalRecord medreco = new MedicalRecord(id, diagnose, treatment, utilDate, medprescid, patid);//Para que esto funcione se necesita contructor de MedicalRecords
+				medrecs.add(medreco);
+			}
+			stmt.close();
+			rs.close();
+			return medrecs;
+		}
+        catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+        catch (NumberFormatException e) {
+			
+			e.printStackTrace();
+		} 
+		return null;
+	}
+	
+	@Override
+	public MedicalRecord ViewOneMedicalRecord(int medrecid, int patid)
+	{
+		try
+		{
+			Statement stmt=c.createStatement();
+			String sql="SELECT * FROM medrecords WHERE id = "+medrecid+" AND patientid = "+patid;
+			ResultSet rs=stmt.executeQuery(sql);
+			int id = rs.getInt("id");
+			String diagnose = rs.getString("diagnose");
+			String treatment = rs.getString("treatment");
+			long dobMillis = rs.getLong("date");
+			Date utilDate = new Date(dobMillis);
+			int medprescid=rs.getInt("medprescid");//El patient id no es necesario que lo coja, ya que se obvia al estar cogiendo los medrecords de un patient concreto
+			MedicalRecord medreco = new MedicalRecord(id, diagnose, treatment, utilDate, medprescid, patid);//Para que esto funcione se necesita contructor de MedicalRecords
+			
+			stmt.close();
+			rs.close();
+			return medreco;
+			
+		}
+        catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+        catch (NumberFormatException e) {
+			
+			e.printStackTrace();
+		} 
+		return null;
 	}
 	
 	@Override
@@ -780,15 +849,13 @@ public class HospitalManagerImplements implements HospitalManager {
 	}
 	
 	@Override
-	public void ClaimMedicine()//Exclusivo de pacientes, habria que hacer que una vez reclamada la medicina no la pueda volver a reclamar, esto se comprobara viendo si el medprescid es NULL
+	public void ClaimMedicine(int medrecidclaim, int patid)//Exclusivo de pacientes, habria que hacer que una vez reclamada la medicina no la pueda volver a reclamar, esto se comprobara viendo si el medprescid es NULL
 	{
 		try
 		{
-			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("\nSpecify the id of the medical record that you want to claim the medicine from: ");
-			int medrecid=Integer.parseInt(br.readLine());
+
 			Statement stmt=c.createStatement();
-			String sql="SELECT medprescid FROM medrecords WHERE id="+ medrecid;
+			String sql="SELECT medprescid FROM medrecords WHERE id="+ medrecidclaim+" AND patientid="+patid;
 			ResultSet rs=stmt.executeQuery(sql);
 			rs.getInt("medprescid");//Primero obtengo el valor que quiero comprobar si es null, y luego ya una vez tengo el valor que quiero comprobar, en este caso medprescid, hago el .wasNull()
 			if(rs.wasNull())//Esto es para ver si medprescid es null, no se puede hacer medprescid ==null, porque en ese caso devuelve 0 la base de datos, hay que hacer esto para comprobar si era null
@@ -797,9 +864,9 @@ public class HospitalManagerImplements implements HospitalManager {
 			}
 			else//En caso de si poder reclamar la medicina, primero quitar el medicine supply, y u8na vez hecho eso automticamnente se vuelve null el medprescid
 			{
-				String sql2="DELETE FROM medsupply WHERE id = (SELECT medprescid FROM medrecords WHERE id= ? )";
+				String sql2="DELETE FROM medsupply WHERE id = (SELECT medprescid FROM medrecords WHERE id= ? )";//Aqui no hace falta comprobar id del paciente, ya que ya la he comprobado arriba 
 				PreparedStatement prep=c.prepareStatement(sql2);
-				prep.setInt(1, medrecid);
+				prep.setInt(1, medrecidclaim);
 				prep.executeUpdate();
 				prep.close();
 				System.out.println("\nMedicine claimed");
@@ -815,10 +882,10 @@ public class HospitalManagerImplements implements HospitalManager {
         catch (NumberFormatException e) {
 			
 			e.printStackTrace();
-		}catch (IOException e) {
-			
-			e.printStackTrace();
 		}
+		
 	}
+
+	
 
 }

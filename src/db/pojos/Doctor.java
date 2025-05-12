@@ -134,8 +134,8 @@ public class Doctor implements Serializable{
 	@Override
 	public String toString() {
 		return "id:" + this.id + ", email: "+ this.email+ ", name:" + this.name + ", dob:" + this.dob + ", experience:" + this.experience + ", address:"
-				+ this.address + ", department:" + this.department + ", sex:" + this.sex + ", appointments:" + this.appointments;//El appointments necesita metodo toString
-	}
+				+ this.address + ", department:" + this.department + ", sex:" + this.sex ;
+	}//El appointments necesitaria un toString()
 	
 	
 	
