@@ -1,0 +1,9 @@
+<!DOCTYPE Appointments [
+    <!ELEMENT Appointments (Appointment+)>
+    <!ELEMENT Appointment (date, doctorId, hour, id, patientId)>
+    <!ELEMENT date (#PCDATA)>
+    <!ELEMENT doctorId (#PCDATA)>
+    <!ELEMENT hour (#PCDATA)>
+    <!ELEMENT id (#PCDATA)>
+    <!ELEMENT patientId (#PCDATA)>
+]>

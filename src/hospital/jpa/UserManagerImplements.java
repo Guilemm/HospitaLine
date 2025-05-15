@@ -71,7 +71,7 @@ public class UserManagerImplements implements UserManager
 	public void createRole(Role role) {
 		em.getTransaction().begin();
 		em.persist(role);
-		em.getTransaction().commit();//v
+		em.getTransaction().commit();
 		
 	}
 

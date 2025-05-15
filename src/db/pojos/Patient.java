@@ -20,7 +20,7 @@ public class Patient implements Serializable{
 	 */
 	private static final long serialVersionUID = -7074079287243196378L;
 	
-	private Integer id;//v
+	private Integer id;
 	private String name;
 	private String email;
 	private String address;
@@ -57,6 +57,21 @@ public class Patient implements Serializable{
 		this.sex = sex;
 		this.dob = dob;
 	}
+	
+	
+
+	public Patient(Integer id, String name, String email, String address, String sex, Date dob,
+			List<MedicalRecord> medrecords, List<Appointment> appointments) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.email = email;
+		this.address = address;
+		this.sex = sex;
+		this.dob = dob;
+		this.medrecords = medrecords;
+		this.appointments = appointments;
+	}
 
 
 	public String getEmail() {
@@ -81,10 +96,10 @@ public class Patient implements Serializable{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getAdrdress() {
+	public String getAddress() {
 		return address;
 	}
-	public void setAdrdress(String adrdress) {
+	public void setAddress(String adrdress) {
 		this.address = adrdress;
 	}
 	public String getSex() {
@@ -114,23 +129,6 @@ public class Patient implements Serializable{
 	public void setAppointments(List<Appointment> appointments) {
 		this.appointments = appointments;
 	}
-	
-	public void BookAppointment()
-	{
-		
-	}
-	
-	public void EliminateAppointment()
-	{
-		
-	}
-	public void ModifyAppointment()
-	{
-		
-	}
-	
-	
-	
 	
 
 	@Override

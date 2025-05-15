@@ -1,6 +1,7 @@
 package db.pojos;
 
 import java.io.Serializable;
+
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class Doctor implements Serializable{
 	private Integer experience;
 	private String address;
 	private String department;
-	private String sex; //Puede ser que esto sea mejor ponerlo como String
+	private String sex; 
 	private List<Appointment> appointments;
 	
 	public Doctor()

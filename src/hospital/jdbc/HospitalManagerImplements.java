@@ -80,7 +80,8 @@ public class HospitalManagerImplements implements HospitalManager {
 					   + "(id       INTEGER  UNIQUE  NOT NULL PRIMARY KEY AUTOINCREMENT,"
 					   + " patientid     INTEGER    REFERENCES  patients(id)  ON DELETE CASCADE, "
 					   + " doctorid  INTEGER    REFERENCES  doctors(id)  ON DELETE CASCADE,"
-					   + "date   DATE   NOT NULL)";
+					   + "date   DATE   NOT NULL,"
+		               + "hour INTEGER NOT NULL)";	
 			stmt3.executeUpdate(sql3);
 			stmt3.close();
 			
@@ -200,7 +201,7 @@ public class HospitalManagerImplements implements HospitalManager {
 			prep.setString(1,  pati.getEmail());
 			prep.setString(2,  pati.getName());
 			prep.setDate(3,  pati.getDob());
-			prep.setString(4,  pati.getAdrdress());
+			prep.setString(4,  pati.getAddress());
 			prep.setString(5,  pati.getSex());
 			prep.executeUpdate();
 			prep.close();
@@ -251,12 +252,13 @@ public class HospitalManagerImplements implements HospitalManager {
     {
 		try
 		{
-			String sql = "INSERT INTO appointments (patientid, doctorid, date)"
-					+ "VALUES (?,?,?);";
+			String sql = "INSERT INTO appointments (patientid, doctorid, date, hour)"
+					+ "VALUES (?,?,?,?);";
 			PreparedStatement prep=c.prepareStatement(sql);
 			prep.setInt(1, apo.getPatientId());
 			prep.setInt(2, apo.getDoctorId());
 			prep.setDate(3, apo.getDate());
+			prep.setInt(4,  apo.getHour());
 			prep.executeUpdate();
 			prep.close();
 		}
@@ -270,6 +272,37 @@ public class HospitalManagerImplements implements HospitalManager {
 		}
 		
     }
+	
+	@Override
+	public boolean CheckAvailability(int hour, int docid)
+	{
+		try
+		{
+			Statement stmt=c.createStatement();
+			String sql="SELECT * FROM appointments";
+			ResultSet rs=stmt.executeQuery(sql);
+			while(rs.next())
+			{
+				int hourbase=rs.getInt("hour");
+				int docidbase=rs.getInt("doctorid");
+				if((docidbase==docid)&&(hourbase==hour))
+				{
+					return false;
+				}
+				
+			}
+			return true;
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+        catch (NumberFormatException e) {
+			
+			e.printStackTrace();
+		}
+		return false;
+	}
 	
 	@Override
 	public Patient getPatientByEmail(String email)
@@ -320,7 +353,8 @@ public class HospitalManagerImplements implements HospitalManager {
 				int docid=rs.getInt("doctorid");
 				long dobMillis = rs.getLong("date");
 				Date utilDate = new Date(dobMillis);
-				Appointment apo=new Appointment(apoid, patid, docid, utilDate);
+				int hour=rs.getInt("hour");
+				Appointment apo=new Appointment(apoid, patid, docid, utilDate, hour);
 				apos.add(apo);
 			}
 			
@@ -341,7 +375,7 @@ public class HospitalManagerImplements implements HospitalManager {
 	}
 	
 	@Override
-	public void EliminateAppointment(int id, int patid)//Esto es un delete, cuando la id que le doy no existe no dice nada, no se si habria que arreglar eso
+	public boolean EliminateAppointment(int id, int patid)//Esto es un delete, cuando la id que le doy no existe no dice nada, no se si habria que arreglar eso
 	{
 		try
 		{
@@ -350,9 +384,9 @@ public class HospitalManagerImplements implements HospitalManager {
 			ResultSet rs=stmt.executeQuery(sqlprov);
 			if(rs.getDate("date")==null)
 			{
-				System.out.println("\nThis appointment does not exist in your appointments");
 				stmt.close();
 				rs.close();
+				return false;
 			}
 			else
 			{
@@ -361,6 +395,7 @@ public class HospitalManagerImplements implements HospitalManager {
 				prep.setInt(1, id);
 				prep.executeUpdate();
 				prep.close();
+				return true;
 			}
 			
 		}
@@ -372,60 +407,35 @@ public class HospitalManagerImplements implements HospitalManager {
 			
 			e.printStackTrace();
 		} 
+		
+		return false;
 	}
 	
 	@Override
-	public void ModifyAppointment(int apo, int patid) //Por el momento este modify appointment va a ser el del patient(Solo se podra modificar o el doctorid o el date). Esto un Update, en este metodo habria que ver segun seas el doctor o el patient, ademas de poder cambiar la fecha, cambiar el paciente o el doctor respectivamente, alomejor hay que hacer dos metodos de modify uno para el patient y otro para el doctor
+	public boolean ModifyAppointment(int apoid, Appointment apo) //Por el momento este modify appointment va a ser el del patient(Solo se podra modificar o el doctorid o el date). Esto un Update, en este metodo habria que ver segun seas el doctor o el patient, ademas de poder cambiar la fecha, cambiar el paciente o el doctor respectivamente, alomejor hay que hacer dos metodos de modify uno para el patient y otro para el doctor
 	{
 		try
 		{
-			Statement stmtprov=c.createStatement();
-			String sqlprov="SELECT * FROM appointments WHERE id="+apo+" AND patientid="+patid;
-			ResultSet rsprov=stmtprov.executeQuery(sqlprov);
-			if(rsprov.getDate("date")==null)
+			Statement stmt=c.createStatement();
+			String sqlprov="SELECT * FROM appointments WHERE id="+apoid+" AND patientid="+apo.getPatientId();
+			ResultSet rs=stmt.executeQuery(sqlprov);
+			if(rs.getDate("date")==null)
 			{
-				System.out.println("\nThis appointment does not exist in your appointments");
-				stmtprov.close();
-				rsprov.close();
+				stmt.close();
+				rs.close();
+				return false;
 			}
 			else
 			{
-				BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-				Statement stmt=c.createStatement();
-				String sql="SELECT * FROM appointments WHERE id="+apo;
-				ResultSet rs=stmt.executeQuery(sql);
-				System.out.println("\nDoctor id is "+rs.getInt("doctorid")+", if you want to keep it the same press enter, if not type the new id: ");
-				String docidstr=br.readLine();
-				if(!docidstr.isEmpty())
-				{
-					String sql1="UPDATE appointments SET doctorid = ? WHERE id = ?";
-					PreparedStatement prep=c.prepareStatement(sql1);
-					prep.setInt(1,  Integer.parseInt(docidstr));
-					prep.setInt(2,  apo);
-					prep.executeUpdate();
-					prep.close();
-				}
-				long dobMillis = rs.getLong("date");
-				Date utilDate = new Date(dobMillis);
-				System.out.println("\nDate is "+utilDate+", if you want to keep it the same press enter, if not type the new date (yyyy-MM-dd): ");
-				String datestr=br.readLine();
-				if(!datestr.isEmpty())
-				{
-					if(LocalDate.parse(datestr).isBefore(LocalDate.now()))
-					{
-						System.out.println("\nInvalid option");
-						return;
-					}
-					String sql2="UPDATE appointments SET date = ? WHERE id = ?";
-					PreparedStatement prep=c.prepareStatement(sql2);
-					prep.setDate(1,  Date.valueOf(datestr));
-					prep.setInt(2,  apo);
-					prep.executeUpdate();
-					prep.close();
-				}
-				stmt.close();
-				rs.close();
+				String sql="UPDATE appointments SET doctorid = ? , date = ? , hour = ? WHERE id= "+apoid+" AND patientid= "+apo.getPatientId();
+				PreparedStatement prep=c.prepareStatement(sql);
+				prep.setInt(1,  apo.getDoctorId());
+				prep.setDate(2,  apo.getDate());
+				prep.setInt(3,  apo.getHour());
+				prep.executeUpdate();
+				prep.close();
 				
+				return true;
 			}
 			
 		}
@@ -436,13 +446,9 @@ public class HospitalManagerImplements implements HospitalManager {
         catch (NumberFormatException e) {
 			
 			e.printStackTrace();
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-		catch (DateTimeParseException e) {
-            System.out.println("\nInvalid date. Use the format (yyyy-MM-dd)");
-		}
+		} 
+		return false;
+		
 	}
 	
 	
@@ -553,151 +559,8 @@ public class HospitalManagerImplements implements HospitalManager {
 		return null;
 	}
 	
-	@Override
-	public void ViewPatientInfo() 
-	{
-		try
-		{
-			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("\nDo you want to see information of: \nAll the patients 1)\nAn specific patient 2)");
-			int choose=Integer.parseInt(br.readLine());
-			switch(choose)
-			{
-			case 1:
-				Statement stmt1 = c.createStatement();
-				String sql1="SELECT * FROM patients";
-				ResultSet rs1=stmt1.executeQuery(sql1);
-				while(rs1.next())
-				{
-					int id=rs1.getInt("id");
-					String email=rs1.getString("email");
-					String name=rs1.getString("name");
-					long dobMillis = rs1.getLong("dob");
-					Date utilDate = new Date(dobMillis);
-					String address=rs1.getString("address");
-					String sex=rs1.getString("sex");
-				
-					Patient pati=new Patient(id, name, email, address, sex, utilDate);
-					System.out.println(pati.toString());
-					
-				}
-				rs1.close();
-				stmt1.close();
-				break;
-			case 2:
-				System.out.println("\nSpecify the id of the patient you want to see information from: ");
-				int patid=Integer.parseInt(br.readLine());
-				Statement stmt = c.createStatement();
-				String sql = "SELECT * FROM patients WHERE id = "+patid;
-				ResultSet rs = stmt.executeQuery(sql);
-				int id=rs.getInt("id");
-				String email=rs.getString("email");
-				String name=rs.getString("name");
-				long dobMillis = rs.getLong("dob");
-				Date utilDate = new Date(dobMillis);
-				String address=rs.getString("address");
-				String sex=rs.getString("sex");
-			
-				Patient pati=new Patient(id, name, email, address, sex, utilDate);
-				System.out.println(pati.toString());
-				rs.close();
-				stmt.close();
-				break;
-			default:
-				System.out.println("\nInvalid option");
-			}
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();//Preguntar si con esto sirve, creo que lo suyo seria que pusiera esto pero que no se terminara el programa
-		}
-        catch (NumberFormatException e) {
-			
-			e.printStackTrace();
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-		catch(NullPointerException e)//Esta excepcion puede darla si la date es null, o si no hay paciente con esa id
-		{
-			e.printStackTrace();
-		}
-	}
 	
 	
-	@Override
-	public void ViewMedicalRecord() 
-	{
-		try 
-		{
-			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("Indicate the id of the patient whose medical record you want to see");
-			int patid = Integer.parseInt(br.readLine());
-			System.out.println("Do you want to see all the medical records of this patient, or an specific report.\n 1) To view all the reports\n 2) To view only one report\n");
-			int choose=Integer.parseInt(br.readLine());
-			switch(choose)
-			{
-			case 1:
-				Statement stmt = c.createStatement();
-				String sql="SELECT * FROM medrecords WHERE patientid = "+patid;
-				ResultSet rs= stmt.executeQuery(sql);
-				while(rs.next())
-				{
-					int id = rs.getInt("id");
-					String diagnose = rs.getString("diagnose");
-					String treatment = rs.getString("treatment");
-					long dobMillis = rs.getLong("date");
-					Date utilDate = new Date(dobMillis);
-					int medprescid=rs.getInt("medprescid");//El patient id no es necesario que lo coja, ya que se obvia al estar cogiendo los medrecords de un patient concreto
-					MedicalRecord medreco = new MedicalRecord(id, diagnose, treatment, utilDate, medprescid, patid);//Para que esto funcione se necesita contructor de MedicalRecords
-					System.out.println(medreco);
-					
-				}
-				
-				rs.close();
-				stmt.close();
-				
-			break;	
-			case 2:
-				System.out.println("Select the medical record you want to see, by indicating its id");
-				int idmed=Integer.parseInt(br.readLine());
-				Statement stmt2 = c.createStatement();
-				String sql2="SELECT * FROM medrecords WHERE patientid = "+patid+" AND id="+idmed;
-				ResultSet rs2= stmt2.executeQuery(sql2);
-				int id = rs2.getInt("id");
-				String diagnose = rs2.getString("diagnose");
-				String treatment = rs2.getString("treatment");
-				long dobMillis = rs2.getLong("date");
-				Date utilDate = new Date(dobMillis);
-				int medprescid=rs2.getInt("medprescid");//El patient id no es necesario que lo coja, ya que se obvia al estar cogiendo los medrecords de un patient concreto
-				
-				MedicalRecord medreco2 = new MedicalRecord(id, diagnose, treatment, utilDate, medprescid, patid);//Para que esto funcione se necesita contructor de MedicalRecords
-				System.out.println(medreco2);
-				
-				rs2.close();
-				stmt2.close();
-
-			
-			break;
-			
-			default:
-				System.out.println("Invalid option");
-			}
-
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-		}
-		catch (NumberFormatException e) {
-			
-			e.printStackTrace();
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-		
-	}
 	
 	
 	@Override
@@ -844,12 +707,69 @@ public class HospitalManagerImplements implements HospitalManager {
 			e.printStackTrace();
 		} catch (IOException e) {
 			
-			e.printStackTrace();//v
+			e.printStackTrace();
 		}
 	}
 	
 	@Override
-	public void ClaimMedicine(int medrecidclaim, int patid)//Exclusivo de pacientes, habria que hacer que una vez reclamada la medicina no la pueda volver a reclamar, esto se comprobara viendo si el medprescid es NULL
+	public void AddAppointmentsfromXml(ArrayList<Appointment> apos, int patid)
+	{
+		try
+		{
+			Statement stmt=c.createStatement();
+			String sql="SELECT * FROM appointments WHERE patientid="+patid;
+			ResultSet rs=stmt.executeQuery(sql);
+			ArrayList<Appointment> aposbase=new ArrayList<Appointment>();
+			while(rs.next())
+			{
+				int apoid=rs.getInt("id");
+				int docid=rs.getInt("doctorid");
+				long dobMillis = rs.getLong("date");
+				Date utilDate = new Date(dobMillis);
+				int hour=rs.getInt("hour");
+				Appointment apo=new Appointment(apoid, patid, docid, utilDate, hour);
+				aposbase.add(apo);
+			}
+			
+			
+			int i=0;
+			while(i<apos.size())
+			{
+				if(!aposbase.contains(apos.get(i)))
+                {
+					boolean can=CheckAvailability(apos.get(i).getHour(), apos.get(i).getDoctorId());
+					if(can)
+					{
+						BookAppointment(apos.get(i));
+					}
+					
+                }
+				else
+				{
+					boolean can=CheckAvailability(apos.get(i).getHour(), apos.get(i).getDoctorId());
+					if(can)
+					{
+						ModifyAppointment(apos.get(i).getId(), apos.get(i));
+					}
+				}
+				
+				i++;
+			}
+			
+			
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+        catch (NumberFormatException e) {
+			
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public boolean ClaimMedicine(int medrecidclaim, int patid)//Exclusivo de pacientes, habria que hacer que una vez reclamada la medicina no la pueda volver a reclamar, esto se comprobara viendo si el medprescid es NULL
 	{
 		try
 		{
@@ -860,7 +780,9 @@ public class HospitalManagerImplements implements HospitalManager {
 			rs.getInt("medprescid");//Primero obtengo el valor que quiero comprobar si es null, y luego ya una vez tengo el valor que quiero comprobar, en este caso medprescid, hago el .wasNull()
 			if(rs.wasNull())//Esto es para ver si medprescid es null, no se puede hacer medprescid ==null, porque en ese caso devuelve 0 la base de datos, hay que hacer esto para comprobar si era null
 			{
-				System.out.println("\nIt is not possible to claim the prescribed medicine, due to it having been claimed before, because there was no medicine prescribed in the first place, or because this medical record does not exist");
+				stmt.close();
+				rs.close();
+				return false;
 			}
 			else//En caso de si poder reclamar la medicina, primero quitar el medicine supply, y u8na vez hecho eso automticamnente se vuelve null el medprescid
 			{
@@ -869,11 +791,11 @@ public class HospitalManagerImplements implements HospitalManager {
 				prep.setInt(1, medrecidclaim);
 				prep.executeUpdate();
 				prep.close();
-				System.out.println("\nMedicine claimed");
+				
+				return true;
 			}
 			
-			stmt.close();
-			rs.close();
+			
 		}
 		catch(SQLException e)
 		{
@@ -883,7 +805,7 @@ public class HospitalManagerImplements implements HospitalManager {
 			
 			e.printStackTrace();
 		}
-		
+		return false;
 	}
 
 	

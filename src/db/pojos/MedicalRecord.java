@@ -6,9 +6,17 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import hospital.xml.SQLDateAdapter;
+
 /*
  * Represents a patient's medical history or visit record
  */
+
+@XmlRootElement
 public class MedicalRecord implements Serializable {
 
 	private Integer id; //unique id for the medical record, coment
@@ -18,9 +26,7 @@ public class MedicalRecord implements Serializable {
 	private Date date;  //date of the medical visit
 	private Integer medicineID;  //id of the medicine used (foreign key)
 	
-	/*
-	 * Constructor
-	 */
+	
 	public MedicalRecord(int id, String diagnosis, String treatment, Date date, int medicineID, int patientID) {
         this.id = id;
         this.patientID = patientID;
@@ -31,7 +37,11 @@ public class MedicalRecord implements Serializable {
 	}
 	
 	
-	
+	public MedicalRecord() {
+		super();
+	}
+
+
 	// Getters
 
     @Override
@@ -54,27 +64,32 @@ public class MedicalRecord implements Serializable {
 	}
 
 
-
+	@XmlElement
 	public int getId() {
         return id;
     }
-
-    public int getPatientIVD() {
+	
+	@XmlElement
+    public int getPatientID() {
         return patientID;
     }
-
+	
+	@XmlElement
     public String getDiagnosis() {
         return diagnosis;
     }
-
+	
+	@XmlElement
     public String getTreatment() {
         return treatment;
     }
-
+    
+    @XmlJavaTypeAdapter(SQLDateAdapter.class)
     public Date getDate() {
         return date;
     }
-
+    
+    @XmlElement
     public int getMedicineID() {
         return medicineID;
     }

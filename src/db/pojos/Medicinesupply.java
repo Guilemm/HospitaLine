@@ -3,6 +3,7 @@ package db.pojos;
 import java.io.Serializable;
 
 
+
 import java.util.Objects;
 
 public class MedicineSupply implements Serializable{
@@ -17,9 +18,7 @@ public class MedicineSupply implements Serializable{
 	    private String name; //name of the medicine
 	    private Integer quantity; //amount of medicine in stock
 	
-	    /*
-	     * Constructor, coment
-	     */
+	   
 	    public MedicineSupply(String name, int quantity) {
 	        this.name = name;
 	        this.quantity = quantity;
@@ -28,7 +27,7 @@ public class MedicineSupply implements Serializable{
  
         
     
-    // Getters
+    
 
     @Override
 		public int hashCode() {
