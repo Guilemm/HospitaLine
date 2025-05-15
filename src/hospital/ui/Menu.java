@@ -5,14 +5,18 @@ import java.io.BufferedReader;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import db.pojos.Appointment;
 import db.pojos.Doctor;
 import db.pojos.MedicalRecord;
+import db.pojos.MedicineSupply;
 import db.pojos.Patient;
 import db.pojos.Role;
 import db.pojos.User;
@@ -26,398 +30,32 @@ import hospital.jpa.UserManagerImplements;
 public class Menu {
 	
 	
-	private static HospitalManagerImplements hospiman;
-	private static UserManagerImplements userman;
 	
-	public static void main(String args[])//Asi no se va a quedar el menu, es para probar lo metodos
-	{
-		hospiman=new HospitalManagerImplements();
-		userman=new UserManagerImplements();
-		
-		boolean keep=true;
-		while(keep)
-		{
-			try
-			{
-				BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-				System.out.println("Welcome, what do you want to do?\n1) Register as a Doctor\n2) Register as a Patient\n3) Log in\n4) Exit");
-				int option=Integer.parseInt(br.readLine());
-				
-				switch(option)
-				{
-				case 1:
-					registerDoctor();
-					break;
-					
-				case 2:
-					registerPatient();
-					break;
-				case 3:
-					login();
-					break;
-				case 4:
-					hospiman.CloseConnection();//Si se pone esto se cierra la conexion por eso al final esta puesto
-					userman.close();
-					keep=false;
-					break;
-				default:
-					System.out.println("\nInvalid option");
-				}
-				
-				
-			}
-			catch (NumberFormatException e) {
-				
-				e.printStackTrace();
-			} catch (IOException e) {
-				
-				e.printStackTrace();
-			}
-			
-			
-			
-		}
-	
-	}
-	
-	public static void registerDoctor()
-	{
-		try
-		{
-			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("\nEnter your email: ");
-			String email=br.readLine();
-			System.out.println("\nEnter your name: ");
-			String name=br.readLine();
-			System.out.println("\nEnter your password: ");
-			String password=br.readLine();
-			System.out.println("\nEnter your address: ");
-			String address=br.readLine();
-			System.out.println("\nSex: M or F");
-			String sexstr=br.readLine();
-			if((!sexstr.equals("M"))&&(!sexstr.equals("F")))
-			{
-				System.out.println("\nInvalid option");
-				return;
-			}
-			System.out.println("\nDate of birth (yyyy-MM-dd): ");
-			String dobstr=br.readLine();
-			if(LocalDate.parse(dobstr).isAfter(LocalDate.now()))
-			{
-				System.out.println("\nInvalid option");
-				return;
-			}
-			System.out.println("\nDepartment: ");
-			String department=br.readLine();
-			System.out.println("\nExperience (years): ");
-			int experience=Integer.parseInt(br.readLine());
-			
-			User user=new User(name, password, email);
-			Doctor doc=new Doctor(name, email, Date.valueOf(dobstr), experience, address, department, sexstr);
-			userman.register(user);
-			Role role=userman.getRole("doctor");
-			userman.assignRole(user, role);
-			hospiman.AddDoctor(doc);
-			
-		}
-		catch (NumberFormatException e) {
-			
-			e.printStackTrace();
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-		catch(DateTimeParseException e)
-		{
-			System.out.println("\nInvalid date format, use (yyyy-MM-dd)");
-		}
-		catch(Exception e)//Esto para cuando haya un username igual
-		{
-			if(e.getMessage().contains("(UNIQUE constraint failed: users.EMAIL)"))
-			{
-				System.out.println("\nThis email already exists in the database");
-				return;
-			}
-			System.out.println("\nError");
-			e.printStackTrace();
-		}
-	}
-	
-	public static void registerPatient()
-	{
-		try
-		{
-			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("\nEnter your email: ");
-			String email=br.readLine();
-			System.out.println("\nEnter your name: ");
-			String name=br.readLine();
-			System.out.println("\nEnter your password: ");
-			String password=br.readLine();
-			System.out.println("\nEnter your address: ");
-			String address=br.readLine();
-			System.out.println("\nSex: M or F");
-			String sexstr=br.readLine();
-			if((!sexstr.equals("M"))&&(!sexstr.equals("F")))
-			{
-				System.out.println("\nInvalid option");
-				return;
-			}
-			System.out.println("\nDate of birth (yyyy-MM-dd): ");
-			String dobstr=br.readLine();
-			if(LocalDate.parse(dobstr).isAfter(LocalDate.now()))
-			{
-				System.out.println("\nInvalid option");
-				return;
-			}
-			User user=new User(name, password, email);
-			Patient pati=new Patient(name, email, address, sexstr, Date.valueOf(dobstr));
-			userman.register(user);
-			Role role=userman.getRole("patient");
-			userman.assignRole(user, role);
-			hospiman.AddPatient(pati);
-		}
-		catch (NumberFormatException e) {
-			
-			e.printStackTrace();
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-		catch(DateTimeParseException e)
-		{
-			System.out.println("\nInvalid date format, use (yyyy-MM-dd)");
-		}
-		catch(Exception e)//Esto para cuando haya un username igual
-		{
-			if(e.getMessage().contains("(UNIQUE constraint failed: users.EMAIL)"))
-			{
-				System.out.println("\nThis email already exists in the database");
-				return;
-			}
-			System.out.println("\nError");
-			e.printStackTrace();
-		}
-	}
-	
-	public static void login()//Comentario para nuevo push
-	{
-		try
-		{
-			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("\nEnter your email: ");
-			String email=br.readLine();
-			System.out.println("\nEnter your password: ");
-			String password=br.readLine();
-			User user1= userman.login(email, password);//Si el user es null va directo al catch NullPointerException
-			if(user1.getRole().getName().equals("patient"))
-			{
-				Patient pat=hospiman.getPatientByEmail(user1.getEmail());
-				boolean keepsesionpat=true;
-				while(keepsesionpat)
-				{
-					System.out.println("Hello "+user1.getUsername()+ ", chose one option:\n1) Your appointments\n2) Doctors\n3) View your medical records\n4) Exit");
-					int option=Integer.parseInt(br.readLine());
-					switch(option)
-					{
-					case 1:
-						System.out.println("\nDo you want to: \n1) Book an appointment\n2) Cancel an appointment\n3) Modify an appointment");
-						int opcion=Integer.parseInt(br.readLine());
-						switch(opcion)
-						{
-						case 1:
-							ArrayList<Doctor> docs=hospiman.ViewAllDoctors();
-							if(docs.isEmpty())
-							{
-								System.out.println("\nThere are no doctors to book an appointment with right now");
-							}
-							else
-							{
-								int i=0;
-								while(i<docs.size())
-								{
-									System.out.println(docs.get(i).toString());
-									i++;
-								}
-								System.out.println("\nFrom this doctors, choose one for you appointment (indicate its id)");
-								int docid=Integer.parseInt(br.readLine());
-								System.out.println("\nIndicate the date of the appointment (yyyy-MM-dd): ");
-								String datestr=br.readLine();
-								if(LocalDate.parse(datestr).isBefore(LocalDate.now()))
-								{
-									System.out.println("\nInvalid option");
-									return;
-								}
-								
-								Appointment apo=new Appointment(pat.getId(), docid, Date.valueOf(datestr));
-								hospiman.BookAppointment(apo);
-							}
-							
-						
-							break;
-						case 2:
-							ArrayList<Appointment> apos=hospiman.getAppointmentsPatient(pat.getId());
-							if(apos.isEmpty())
-							{
-								System.out.println("\nYou have no appointments");
-							}
-							else
-							{
-								int r=0;
-								while(r<apos.size())
-								{
-									System.out.println(apos.get(r).toString());
-									r++;
-								}
-								System.out.println("\nWhich one of your appointments do you want to cancel? (Indicate the id of the appointment)");
-								int apcancel=Integer.parseInt(br.readLine());
-								hospiman.EliminateAppointment(apcancel, pat.getId());
-							}
-							
-							break;
-						case 3:
-							ArrayList<Appointment> aposup=hospiman.getAppointmentsPatient(pat.getId());
-							if(aposup.isEmpty())
-							{
-								System.out.println("\nYou have no appointments");
-							}
-							else
-							{
-								int k=0;
-								while(k<aposup.size())
-								{
-									System.out.println(aposup.get(k).toString());
-									k++;
-								}
-								System.out.println("\nWhich one of your appointments do you want to update? (Indicate the id of the appointment)");
-								int apupid=Integer.parseInt(br.readLine());
-								hospiman.ModifyAppointment(apupid, pat.getId());
-							}
-			
-							break;
-						default:
-							System.out.println("\nInvalid option");
-						}
-						break;
-						
-					case 2:
-						System.out.println("What do you want to do: \n1) View all doctors \n2) View an specific doctor");
-						int op=Integer.parseInt(br.readLine());
-						switch(op)
-						{
-						case 1:
-							ArrayList<Doctor> docs=hospiman.ViewAllDoctors();
-							if(docs.isEmpty())
-							{
-								System.out.println("\nThere are no doctors right now");
-							}
-							else
-							{
-								int f=0;
-								while(f<docs.size())
-								{
-									System.out.println(docs.get(f).toString());
-									f++;
-								}
-								
-							}
-							
-							break;
-						case 2:
-							System.out.println("\nIntroduce the id of the doctor you want to see: ");
-							int docidsee=Integer.parseInt(br.readLine());
-							Doctor docsee=hospiman.ViewDoctorInfo(docidsee);
-							if(docsee.getEmail()==null)
-							{
-								System.out.println("\nThere is no such doctor");
-							}
-							else
-							{
-								System.out.println(docsee.toString());
-							}
-							
-							break;
-						default:
-							System.out.println("\nInvalid option");
-						}
-						break;
-					case 3:
-						System.out.println("\nDo you want to see: \n1) All your medical records \n2) Just one \n3) Claim medicine from a medical record");
-						int opc=Integer.parseInt(br.readLine());
-						switch(opc)
-						{
-						case 1:
-							ArrayList<MedicalRecord> medrecs=hospiman.ViewAllMedicalRecords(pat.getId());
-							if(medrecs.isEmpty())
-							{
-								System.out.println("\nYou have no medical records");
-							}
-							else
-							{
-								int y=0;
-								while(y<medrecs.size())
-								{
-									System.out.println(medrecs.get(y).toString());
-									y++;
-								}
-							}
-							
-							
-							break;
-						case 2:
-							System.out.println("\nWhich one of your Mediacl Records do you want to see? (Specify the id): ");
-							int medrecid=Integer.parseInt(br.readLine());
-							MedicalRecord medrec=hospiman.ViewOneMedicalRecord(medrecid, pat.getId());
-							if(medrec.getDiagnosis()==null)
-							{
-								System.out.println("\nThis medical record, does not exist");
-							}
-							else
-							{
-								System.out.println(medrec.toString());
-							}
-							
-							
-							break;
-						case 3:
-							System.out.println("\nWhich one of your Medical Records do you want to claim medicine from? (Specify the id of the Medical Record): ");
-							int medrecidclaim=Integer.parseInt(br.readLine());
-							hospiman.ClaimMedicine(medrecidclaim, pat.getId());
-							
-							break;
-						default:
-							System.out.println("\nInvalid option");
-						}
-						
-						
-						break;
-					case 4:
-						keepsesionpat=false;
-						break;
-					default:
-						System.out.println("\nInvalid option");
-					}
-					
-				}
-				
-			}
 			if(user1.getRole().getName().equals("doctor"))
+//--------------------------------------------------DOCTOR-------------------------------------------			
 			{
+				Doctor doctor = hospiman.getDoctorByEmail(user1.getEmail());
+
 				boolean keepsesiondoc=true;
 				while(keepsesiondoc)//v
 				{
-					System.out.println("Hello Dr/a."+user1.getUsername()+", what do you want to do: \n1) Appointments \n2) Medical records \n3) Medicine supply \n4) Exit");
+					System.out.println("Hello Dr/a."+user1.getUsername()+", what do you want to do: "
+							+ "\n1) See your next appointments. "
+							+ "\n2) Manage the medical records "
+							+ "\n3) Manage the medicine supply "
+							+ "\n4) Exit");
 					int option=Integer.parseInt(br.readLine());
 					switch(option)
 					{
 					case 1:
-						//Aqui se puede solo ver appointments, todos o uno en concreto, de los que tengas, si no tienes te lo pone 
+						seeAppointmentsInMenu(doctor);
 						break;
-					case 2:
-						//Aqui se puede ver, update y add medical records, de pacientes con appointments con el doctor, si no hay appointments te lo pone
+					case 2://Medical Record
+						manageDoctorMedicalRecords2(doctor);
 						break;
 					case 3:
-						//Aqui hay una opcion para ver todas las medicines del supply , y para añadir medicines nuevas
+						//See all medicines, add a new medicine
+						manageMedicineSupply();
 						break;
 					
 					case 4:
@@ -443,5 +81,395 @@ public class Menu {
 		{
 			System.out.println("\nInvalid combination of username and password");
 		}
-	}
 }
+
+//CASE 1 -> APPOINTMENTS //[TERMINADO]
+	/**
+	 * Sees the future appointments of a doctor by introducing its id
+	 * @param doctor The doctor of whom we want to see the appointments
+	 */
+	public static void seeAppointmentsInMenu(Doctor doctor) {
+		
+		
+		List<Appointment> listOfAppointments = hospiman.viewAppointmentsFromDoctor(doctor.getId());
+	
+		
+		if(listOfAppointments.isEmpty()) {//esta vacio, no tiene appointments
+			System.out.println("You don't have any appointments.");
+		}else {
+			System.out.println("Your next appointments are:");
+			System.out.println("-----------------------------------");
+			for (Appointment appointment : listOfAppointments) {
+	            System.out.println(appointment.toString());
+	            System.out.println("-----------------------------------");
+			}
+		}
+	}
+	
+	
+	
+//CASE 2 -> MEDICAL RECORDS
+	/**
+	 * This method manages the menu for the mdical records
+	 * 1) View a medical record
+	 * 2) Update a medical record 
+	 * 3) Add a medical record
+	 * 4) Return to main menu");
+	 * @param doctor
+	 * @throws IOException
+	 */
+		//[TERMINADO]
+	public static void manageDoctorMedicalRecords2(Doctor doctor) throws IOException {
+	    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		    try {
+			boolean continueManaging = true;
+			    while (continueManaging) {
+			        System.out.println("What do you want to do: \n"
+			                + "1) View a medical record \n"
+			                + "2) Update a medical record \n"
+			                + "3) Add a medical record \n"
+			                + "4) Return to main menu");
+			        
+			        int option = Integer.parseInt(br.readLine());
+			        
+			        switch (option) {
+			            case 1:
+			            	viewPatientMedicalRecords(doctor);
+			                break;
+			            case 2:
+			                updateMedicalRecord(doctor);
+			                break;
+			            case 3:
+			                addMedicalRecord(doctor);
+			                break;
+			            case 4:
+			                continueManaging = false;
+			                break;
+			            default:
+			                System.out.println("\nInvalid option");
+			        }
+			     }
+			  }catch(NumberFormatException e) {
+			    	System.out.println("Introduce un numero.");
+			    	e.printStackTrace();
+			    	return;
+			   } 
+	   
+	    
+		   
+	}
+		
+		/**
+		 * Shows the patient medical records in 2 ways:
+		 * 1. All the medical records 
+		 * 2. Filtered by date
+		 * @param doctor
+		 * @throws IOException
+		 */
+			//[TERMINADO]
+		public static void viewPatientMedicalRecords(Doctor doctor) throws IOException {
+		    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		    
+		    // Show doctor's patients
+		    System.out.println("\nYour patients:");
+		    List<Patient> patients = hospiman.getPatientsByDoctor(doctor.getId());
+		   
+		    if (patients.isEmpty()) {
+		        System.out.println("You currently have no assigned patients.");
+		        return;//vuelve
+		    }
+		    
+		    for (Patient p : patients) {
+		            System.out.println(p.getId() + ": " + p.getName());
+		            
+		        }
+		    
+		    // pido el paciente id
+		    System.out.print("\nEnter patient ID: ");
+		    int patientId = Integer.parseInt(br.readLine());
+		    
+		 // Verifico que el que haya introducido sea paciente del doctor (miro las appointments en comun que tiene)
+		    List<Integer> sharedAppointmentsIds = hospiman.getSharedAppointmentsIDs(patientId, doctor.getId());
+		    if(sharedAppointmentsIds.isEmpty()){
+		    	 System.out.println("This patient is not assigned to you.");
+			        return;
+		    }
+		    
+		    
+		    // View options
+		    System.out.println("\nView options:");
+		    System.out.println("1. View all medical records");
+		    System.out.println("2. Filter by date");
+		    System.out.print("Select an option: ");
+		    int choice = Integer.parseInt(br.readLine());
+		    
+		    switch(choice) {
+		    	case 1:  //View all medical records of the patient
+		    		List<MedicalRecord> records = hospiman.ViewAllMedicalRecords(patientId);
+		    		if(records==null) {
+		    			System.out.println("We couldnt retrive the medical records for patientID: "+patientId);
+		    			return;
+		    		}
+		    		if (records.isEmpty()) {
+		                System.out.println("No medical records found for this patient.");
+		            } else {
+		                System.out.println("\nMedical Records for Patient ID " + patientId + ":");
+		                for (MedicalRecord mr : records) {
+		                    System.out.println("----------------------");
+		                    System.out.println("Record ID: " + mr.getId());
+		                    System.out.println("Date: " + mr.getDate());
+		                    System.out.println("Diagnosis: " + mr.getDiagnosis());
+		                    System.out.println("Treatment: " + mr.getTreatment());
+		                }
+		                System.out.println("----------------------");
+		            }
+		            break;
+		    	case 2: //Filter medical records of the patient by date
+		    		System.out.print("Enter date (yyyy-MM-dd): ");
+		            Date date = Date.valueOf(br.readLine());
+		            List<MedicalRecord> filteredRecords = hospiman.getMedicalRecordsByPatientAndDate(patientId, date);
+		            if(filteredRecords==null) {
+		    			System.out.println("We couldnt retrive the medical records for patientID: "+patientId+
+		    					"in date: "+date);
+		    			return;
+		    		}
+		            if (filteredRecords.isEmpty()) {
+		                System.out.println("No records found for this date.");
+		            } else {
+		                System.out.println("\nRecords for " + date + ":");
+		                for (MedicalRecord mr : filteredRecords) {
+		                    System.out.println("----------------------");
+		                    System.out.println("Record ID: " + mr.getId());
+		                    System.out.println("Diagnosis: " + mr.getDiagnosis());
+		                    System.out.println("Treatment: " + mr.getTreatment());
+		                }
+		                System.out.println("----------------------");
+		            }
+		            break;
+	            default: 
+	            	System.out.println("Invalid option.");
+		    }
+		   
+		}
+		
+	
+		
+		//TODO: hospiman.getMedicalRecordById(recordId);
+		//TODO: hospiman.updateMedicalRecord(record);
+		private static void updateMedicalRecord(Doctor doctor) throws IOException {
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			
+			// Show doctor's patients
+		    System.out.println("\nYour patients:");
+		    List<Patient> patients = hospiman.getPatientsByDoctor(doctor.getId());
+		   
+		    if (patients.isEmpty()) {
+		        System.out.println("You currently have no assigned patients.");
+		        return;//vuelve
+		    }
+		    
+		    for (Patient p : patients) {
+		            System.out.println(p.getId() + ": " + p.getName());
+		        }
+		    
+		    // pido el paciente id
+		    System.out.print("\nEnter patient ID: ");
+		    int patientId = Integer.parseInt(br.readLine());
+		    
+		 // Verifico que el que haya introducido sea paciente del doctor (miro las appointments en comun que tiene)
+		    List<Integer> sharedAppointmentsIds = hospiman.getSharedAppointmentsIDs(patientId, doctor.getId());
+		    if(sharedAppointmentsIds.isEmpty()){
+		    	 System.out.println("This patient is not assigned to you.");
+			        return;
+		    }
+		    
+		    // Show existing records 
+		    List<MedicalRecord> records = hospiman.ViewAllMedicalRecords(patientId);
+		    if (records.isEmpty()) {
+		        System.out.println("This patient has no medical records to update.");
+		        return;
+		    }
+		    
+		    System.out.println("\nExisting Medical Records:");
+		    for (MedicalRecord mr : records) {
+		        System.out.println(mr.getId() + ": " + mr.getDate() + " - " + mr.getDiagnosis());
+		    }
+		    
+		    System.out.print("\nEnter Record ID to update: ");
+		    int recordId = Integer.parseInt(br.readLine());
+		    
+		    //TODO
+		    MedicalRecord record = hospiman.ViewOneMedicalRecord(recordId, patientId);
+		   
+		    
+		    if (record == null || record.getPatientID() != patientId) {
+		        System.out.println("Invalid record ID for this patient.");
+		        return;
+		    }
+		    
+		    System.out.println("\nCurrent values:");
+		    System.out.println("1. Diagnosis: " + record.getDiagnosis());
+		    System.out.println("2. Treatment: " + record.getTreatment());
+		    
+		    System.out.println("\nEnter new values (leave blank to keep current):");
+		    System.out.print("New Diagnosis: ");
+		    String diagnosis = br.readLine();
+		    if (!diagnosis.isEmpty()) record.setDiagnosis(diagnosis);
+		    
+		    System.out.print("New Treatment: ");
+		    String treatment = br.readLine();
+		    if (!treatment.isEmpty()) record.setTreatment(treatment);
+		        
+		    // Update date to current date
+		    record.setDate(new Date(System.currentTimeMillis()));
+		        
+		    
+		    if (hospiman.updateMedicalRecord(record)) {
+		        System.out.println("Medical record updated successfully.");
+		    } else {
+		        System.out.println("Failed to update medical record.");
+		    }
+		}
+		
+		    
+		
+		//TODO: hospiman.getMedicineSupplyID(medicine);
+		//TODO:  hospiman.addMedicalRecord(newRecord);
+		//TODO: hospiman.addMedicineSupply(medicine);
+		//TODO: hospiman.deleteMedicineSupply(medicineId);
+	private static void addMedicalRecord(Doctor doctor) throws IOException{
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+				// Show doctor's patients
+			    System.out.println("\nYour patients:");
+			    List<Patient> patients = hospiman.getPatientsByDoctor(doctor.getId());
+			   
+			    if (patients.isEmpty()) {
+			        System.out.println("You currently have no assigned patients.");
+			        return;//vuelve
+			    }
+			    
+			    for (Patient p : patients) {
+			            System.out.println(p.getId() + ": " + p.getName());
+			        }
+			    
+			    // pido el paciente id
+			    System.out.print("\nEnter patient ID: ");
+			    int patientId = Integer.parseInt(br.readLine());
+			    
+			    // Verifico que el que haya introducido sea paciente del doctor (miro las appointments en comun que tiene)
+			    List<Integer> sharedAppointmentsIds = hospiman.getSharedAppointmentsIDs(patientId, doctor.getId());
+			    if(sharedAppointmentsIds.isEmpty()){
+			    	 System.out.println("This patient is not assigned to you.");
+				        return;
+			    }
+			    
+			    
+			    System.out.println("Enter diagnosis:");
+			    String diagnosis = br.readLine();
+			    
+			    System.out.println("Enter treatment:");
+			    String treatment = br.readLine();
+			    
+			    
+			    System.out.println("This are the medicine supply: ");
+			    List<MedicineSupply> medicineSupplies = hospiman.getAllMedicineSupplies();
+			    for(MedicineSupply ms: medicineSupplies) {
+			    	System.out.println("Name: "+ms.getName()+" (ID "+ms.getId()+" )");
+			    }
+			    
+			    System.out.print("Enter medicine ID: ");
+			    int medicineId = Integer.parseInt(br.readLine());
+			    
+			    //comprobar que la medciina no este prescrita para otro paciente
+			    if(!hospiman.isMedicineAvailable(medicineId)) {
+			    	System.out.println("This medicine has been already prescribed and is not available.");
+			    	return;
+			    }
+			    
+			    // Creamos medicalRecord sin el id ya que lo añade la db
+			    MedicalRecord newRecord = new MedicalRecord();
+			    newRecord.setPatientID(patientId);
+			    newRecord.setDiagnosis(diagnosis);
+			    newRecord.setTreatment(treatment);
+			    newRecord.setDate(new Date(System.currentTimeMillis()));
+			    newRecord.setMedicineID(medicineId);
+			    
+			    // Guardamos el medicalrecord
+			    if (hospiman.addMedicalRecord(newRecord)) {
+		            System.out.println("\nMedical record created successfully!");
+		            System.out.println("Record ID: " + newRecord.getId());
+		        } else {
+		            System.out.println("Failed to create medical record.");
+		            //Eliminamos la medSupply que habiamos añadido
+		            hospiman.deleteMedicineSupply(medicineId);
+		        }
+	
+		}
+		
+		
+		
+//CASE 3 -> MEDCINE SUPPLY [TERMINADO]
+	/**
+	 * This method manages the medicine supply (option3)
+	 * 1)show all medicines supplies
+	 * 2)add a new medicine supply
+	 * @throws IOException
+	 */
+	public static void manageMedicineSupply() throws IOException {
+	    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	    
+	    System.out.println("What do you want to do:\n" +
+	                     "1) View all medicine supplies\n" +
+	                     "2) Add new medicine");
+	    int option = Integer.parseInt(br.readLine());
+	    
+	    if(option == 1) {
+	        List<MedicineSupply> medicines = hospiman.getAllMedicineSupplies();
+	        if(medicines.isEmpty()) {
+                System.out.println("No medicines found");
+	        }else {
+                for(MedicineSupply med : medicines) {
+	            System.out.println(med.toString());
+                }
+             }
+	    } else if(option == 2) {
+	        System.out.println("Enter medicine name:");
+	        String name = br.readLine();
+	        //compruebo lo que ha introducido
+		        if(name.isEmpty()) {
+		                System.out.println("Medicine name cannot be empty");
+		                return;
+		        }
+	        System.out.println("Enter quantity:");
+	        int quantity = Integer.parseInt(br.readLine());
+	        //compruebo lo que ha introducido
+		        if(quantity <= 0) {
+		                System.out.println("Quantity must be positive");
+		                return;
+		            }
+	       
+		    //creo y añado la medicna
+	        MedicineSupply newMedicine = new MedicineSupply(name, quantity);
+	        Boolean added = hospiman.addMedicineSupply(newMedicine);
+		    
+		    if (!added) {
+	            System.out.println("Failed to save medicine supply information.");
+	        }else {
+	        	 System.out.println("Medicine added successfully");
+	        }
+	       
+	    } else {
+	        System.out.println("Invalid option");
+	    }
+	   
+	}
+		
+		
+		
+		
+		
+		
+		
+}
+		
+		
