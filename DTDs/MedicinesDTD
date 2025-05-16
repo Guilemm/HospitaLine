@@ -1,0 +1,7 @@
+<!DOCTYPE Medicines [
+    <!ELEMENT Medicines (Medicine+)>
+    <!ELEMENT Medicine (id, name, quantity)>
+    <!ELEMENT id (#PCDATA)>
+    <!ELEMENT name (#PCDATA)>
+    <!ELEMENT quantity (#PCDATA)>
+]>

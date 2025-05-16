@@ -1,6 +1,7 @@
 package hospital.jpa;
 
 import javax.persistence.EntityManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;//Para poder utilizar esto, emn el pom.xml, hay que añadir la maven dependency 5.8.1, la que añadi yo
 
 import db.pojos.Role;
 import db.pojos.User;
@@ -14,6 +15,8 @@ public class UserManagerImplements implements UserManager
 {
 	
 	EntityManager em;
+	
+	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 	
 	public UserManagerImplements()
 	{
@@ -53,11 +56,19 @@ public class UserManagerImplements implements UserManager
 	public User login(String email, String password) {
 		try
 		{
-			Query q=em.createNativeQuery("SELECT * FROM users WHERE email = ? AND password = ?", User.class);//Esto para ver si esta el user ya registrado, al buscar en la base de datos da igual que el nombre este en mayusculas
+			Query q=em.createNativeQuery("SELECT * FROM users WHERE email = ?", User.class);//Esto para ver si esta el user ya registrado, al buscar en la base de datos da igual que el nombre este en mayusculas
 			q.setParameter(1, email);
-			q.setParameter(2, password);
-			User user= (User) q.getSingleResult();//Por que se supone que solo ha de haber un user con estas caracteristicas, al ser el username unique
-			return user;
+			User user= (User) q.getSingleResult();//Aqui estaria obteniendo la contraseña encriptada, si eso coincide con la contraseña que pone el usuario (password), entonces devuelvo el usuario
+			
+			if(encoder.matches(password, user.getPassword()))//Password es la contraseña en texto plano, que el user mete, y user.getPassword es la contraseña encriptada
+			{
+				return user;
+			}
+			else
+			{
+				return null;
+			}
+			
 		}
 		catch(NoResultException e)//Retornara null si no hay ningun user con ese nombre y password
 		{
@@ -87,6 +98,9 @@ public class UserManagerImplements implements UserManager
 
 	@Override
 	public void register(User user) {
+		String hashedpassword=encoder.encode(user.getPassword());
+		user.setPassword(hashedpassword);
+		
 		em.getTransaction().begin();
 		em.persist(user);
 		em.getTransaction().commit();
@@ -100,5 +114,34 @@ public class UserManagerImplements implements UserManager
 		user.setRole(role);
 		role.addUser(user);
 		em.getTransaction().commit();
+	}
+
+
+	@Override
+	public void deleteAccount(User user) {
+		em.getTransaction().begin();
+		Query q=em.createNativeQuery("DELETE FROM users WHERE id= ?");
+		q.setParameter(1,  user.getId());
+		q.executeUpdate();
+		em.getTransaction().commit();
+		
+	}
+
+
+	@Override
+	public boolean changePassword(User user, String newpassword) {
+		User manageuser=em.find(User.class, user.getId());
+		if(manageuser!=null)
+		{
+			String hashedpassword=encoder.encode(newpassword);
+			
+			em.getTransaction().begin();
+			manageuser.setPassword(hashedpassword);
+			em.getTransaction().commit();
+			return true;
+		}
+		
+		return false;
+		
 	}
 }

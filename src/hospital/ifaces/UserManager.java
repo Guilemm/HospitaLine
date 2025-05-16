@@ -18,4 +18,9 @@ public interface UserManager {
 	public void register(User user);
 	
 	public void assignRole(User user, Role role);
+	
+	public void deleteAccount(User user);
+	
+	public boolean changePassword(User user, String newpassword);
+	
 }

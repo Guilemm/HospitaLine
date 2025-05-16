@@ -2,6 +2,8 @@ package hospital.xml;
 
 import java.io.File;
 
+
+
 import java.util.ArrayList;
 
 import javax.xml.bind.JAXBContext;
@@ -11,6 +13,7 @@ import javax.xml.bind.Unmarshaller;
 
 import db.pojos.Appointment;
 import db.pojos.MedicalRecord;
+import db.pojos.MedicineSupply;
 import db.pojos.Patient;
 import hospital.ifaces.XmlManager;
 
@@ -44,19 +47,19 @@ public class XmlManagerImplements implements XmlManager{
 	}
 
 	@Override
-	public void Java2XmlMedicalRecords(ArrayList<MedicalRecord> medrecs) {
+	public void Java2XmlMedicines(ArrayList<MedicineSupply> meds) {
 		try {
 			
-			JAXBContext jaxbContext = JAXBContext.newInstance(MedicalRecordsList.class);
+			JAXBContext jaxbContext = JAXBContext.newInstance(MedicinesList.class);
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,Boolean.TRUE);
 			
-			File file=new File("./xml/MedicalRecords.xml");
+			File file=new File("./xml/Medicines.xml");
 			
-			MedicalRecordsList medrecslist = new MedicalRecordsList();
-	        medrecslist.setMedicalRecord(medrecs);
-			marshaller.marshal(medrecslist, file);
+			MedicinesList medslist = new MedicinesList();
+	        medslist.setMedicine(meds);
+			marshaller.marshal(medslist, file);
 				
 		} 
 		catch (JAXBException e) {
@@ -67,18 +70,18 @@ public class XmlManagerImplements implements XmlManager{
 	}
 
 	@Override
-	public ArrayList<MedicalRecord> Xml2JavaMedicalRecords() {
+	public ArrayList<MedicineSupply> Xml2JavaMedicines() {
 		try
 		{
-			JAXBContext jaxbContext = JAXBContext.newInstance(MedicalRecordsList.class);
+			JAXBContext jaxbContext = JAXBContext.newInstance(MedicinesList.class);
 			Unmarshaller unmarshaller=jaxbContext.createUnmarshaller();
 			
-			File file = new File("./xml/MedicalRecords.xml");
+			File file = new File("./xml/Medicines.xml");
 			
-			MedicalRecordsList medrecs = (MedicalRecordsList) unmarshaller.unmarshal(file);
-			ArrayList<MedicalRecord> medrecsreturn = new ArrayList<>(medrecs.getMedicalRecord());
+			MedicinesList meds = (MedicinesList) unmarshaller.unmarshal(file);
+			ArrayList<MedicineSupply> medsreturn = new ArrayList<>(meds.getMedicine());
 			
-			return medrecsreturn;
+			return medsreturn;
 		}
 		catch (JAXBException e) {
 			// TODO Auto-generated catch block

@@ -57,8 +57,20 @@ public class User implements Serializable{
 		return email;
 	}
 
-	
+	public Integer getId() {
+		return id;
+	}
 
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	
 	
 	
 }

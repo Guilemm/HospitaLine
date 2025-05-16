@@ -26,14 +26,12 @@ public class Patient implements Serializable{
 	private String address;
 	private String sex;
 	private Date dob;
-	private List<MedicalRecord> medrecords;
-	private List<Appointment> appointments;
+	
 	
 	public Patient()
 	{
 		super();
-		appointments = new ArrayList<Appointment>();
-		medrecords = new ArrayList<MedicalRecord>();
+		
 	}
 	
 	
@@ -58,20 +56,6 @@ public class Patient implements Serializable{
 		this.dob = dob;
 	}
 	
-	
-
-	public Patient(Integer id, String name, String email, String address, String sex, Date dob,
-			List<MedicalRecord> medrecords, List<Appointment> appointments) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.email = email;
-		this.address = address;
-		this.sex = sex;
-		this.dob = dob;
-		this.medrecords = medrecords;
-		this.appointments = appointments;
-	}
 
 
 	public String getEmail() {
@@ -114,29 +98,16 @@ public class Patient implements Serializable{
 	public void setDob(Date dob) {
 		this.dob = dob;
 	}
-	public List<MedicalRecord> getMedrecords() {
-		return medrecords;
-	}
-
-	public void setMedrecords(List<MedicalRecord> medrecords) {
-		this.medrecords = medrecords;
-	}
-
-	public List<Appointment> getAppointments() {
-		return appointments;
-	}
-
-	public void setAppointments(List<Appointment> appointments) {
-		this.appointments = appointments;
-	}
 	
-
+	
+	
 	@Override
 	public String toString() {
-		return "id:" + this.id + ", name:" + this.name + ", email:" + this.email + ", address:" + this.address + ", sex:" + this.sex + ", dob:" + this.dob + "Medical records:" + this.medrecords + 
-				"Appointments:" + this.appointments;
+		return "Patient [id=" + id + ", name=" + name + ", email=" + email + ", address=" + address + ", sex=" + sex
+				+ ", dob=" + dob + "]";
 	}
-	
+
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
