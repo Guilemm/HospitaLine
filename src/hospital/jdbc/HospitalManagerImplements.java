@@ -331,7 +331,7 @@ public class HospitalManagerImplements implements HospitalManager {
         }
         catch(SQLException e)
         {
-            throw new SQLException();
+            throw e;
         }
         catch (NumberFormatException e) {
 
@@ -356,10 +356,14 @@ public class HospitalManagerImplements implements HospitalManager {
                 Date utilDate = new Date(dobMillis);
                 if((docidbase==docid)&&(hourbase==hour)&&(utilDate.equals(date)))
                 {
+                	stmt.close();
+                	rs.close();
                 	return false;
                 }
 
             }
+            stmt.close();
+            rs.close();
             
             return true;
     	}
@@ -462,6 +466,9 @@ public class HospitalManagerImplements implements HospitalManager {
             }
             else
             {
+            	stmt.close();
+            	rs.close();
+            	
                 String sql = "DELETE FROM appointments WHERE id=?";
                 PreparedStatement prep = c.prepareStatement(sql);
                 prep.setInt(1, id);
@@ -499,22 +506,28 @@ public class HospitalManagerImplements implements HospitalManager {
             }
             else
             {
-            
+            	stmt.close();
+            	rs.close();
                 String sql="UPDATE appointments SET doctorid = ? , date = ? , hour = ? WHERE id= "+apoid+" AND patientid= "+apo.getPatientId();
-                PreparedStatement prep=c.prepareStatement(sql);
-                prep.setInt(1,  apo.getDoctorId());
-                prep.setDate(2,  apo.getDate());
-                prep.setInt(3,  apo.getHour());
-                prep.executeUpdate();
-                prep.close();
-
+                try(PreparedStatement prep=c.prepareStatement(sql);)
+                {
+                	 prep.setInt(1,  apo.getDoctorId());
+                     prep.setDate(2,  apo.getDate());
+                     prep.setInt(3,  apo.getHour());
+                     prep.executeUpdate();
+                }
+                catch(SQLException e)
+                {
+                	throw e;
+                }
+                
                 return true;
             }
 
         }
         catch(SQLException e)
         {
-            throw new SQLException();
+            throw e;
         }
         catch (NumberFormatException e) {
 
@@ -670,6 +683,8 @@ public class HospitalManagerImplements implements HospitalManager {
                 Appointment apo=new Appointment(apoid, patid, docid, utilDate, hour);
                 aposbase.add(apo);
             }
+            stmt.close();
+            rs.close();
 
 
             int i=0;

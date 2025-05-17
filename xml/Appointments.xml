@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Appointments>
     <Appointment>
-        <date>2029-05-03</date>
-        <doctorId>10</doctorId>
+        <date>2030-08-07</date>
+        <doctorId>11</doctorId>
         <hour>2</hour>
-        <id>32</id>
-        <patientId>11</patientId>
-    </Appointment>
-    <Appointment>
-        <date>2123-07-08</date>
-        <doctorId>10</doctorId>
-        <hour>3</hour>
-        <id>34</id>
-        <patientId>11</patientId>
+        <id>46</id>
+        <patientId>15</patientId>
     </Appointment>
 </Appointments>

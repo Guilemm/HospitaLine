@@ -2,8 +2,6 @@ package hospital.ui;
 
 import java.io.BufferedReader;
 
-
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
@@ -334,7 +332,7 @@ public class Menu {
     							System.out.println(docs.get(i).toString());
     							i++;
     						}
-    						System.out.println("\nFrom this doctors, choose one for you appointment (indicate its id)");
+    						System.out.println("\nFrom this doctors, choose one for your appointment (indicate its id)");
     						int docid=Integer.parseInt(br.readLine());
     						System.out.println("\nIndicate the date of the appointment (yyyy-MM-dd): ");
     						String datestr=br.readLine();
@@ -442,7 +440,16 @@ public class Menu {
     								if(disp)
     								{
     									Appointment apo=new Appointment(pat.getId(), docid, Date.valueOf(datestr), hour);
-    									boolean modified=hospiman.ModifyAppointment(apupid, apo);
+    									boolean modified=false;
+    									try
+    									{
+    										modified=hospiman.ModifyAppointment(apupid, apo);
+    									}
+    									catch(SQLException e)
+    									{
+    										System.out.println("\nInvalid option");
+    									}
+    									
     									if(modified)
     									{
     										System.out.println("\nThe appointment was updated");
@@ -592,7 +599,7 @@ public class Menu {
     				}
     				catch(SQLException e)
     				{
-    					System.out.println("\nThere are doctors in the Xml appointments that does not exist");
+    					System.out.println("\nThere are doctors or patients in the Xml appointments that does not exist");
     				}
     					
     				
@@ -642,6 +649,10 @@ public class Menu {
     			e.printStackTrace();
     		} catch (IOException e) {
     			
+    			e.printStackTrace();
+    		}
+    		catch(NullPointerException e)
+    		{
     			e.printStackTrace();
     		}
     		catch(Exception e)//Lo suyo será separar bloque doctors y patients en dos public voids
@@ -1089,6 +1100,10 @@ public class Menu {
     			e.printStackTrace();
     		} catch (IOException e) {
     			
+    			e.printStackTrace();
+    		}
+    		catch(NullPointerException e)
+    		{
     			e.printStackTrace();
     		}
     		catch(Exception e)//Lo suyo será separar bloque doctors y patients en dos public voids
