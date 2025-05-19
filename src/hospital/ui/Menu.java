@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import javax.xml.bind.UnmarshalException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -291,7 +292,7 @@ public class Menu {
     		{
     			Patient pat=hospiman.getPatientByEmail(user1.getEmail());
     				
-    			System.out.println("Hello "+user1.getUsername()+ ", chose one option:\n1) Your appointments\n2) Doctors\n3) View your medical records\n4) Export information of your appointments to an Xml file \n5) Retrieve the information of your appointments from an Xml file \n6) Change your password \n7) Delete your account \n8) Exit");
+    			System.out.println("Hello "+user1.getUsername()+ ", chose one option:\n1) Your appointments\n2) Doctors\n3) View your medical records\n4) Export information of your appointments to an Xml file \n5) Retrieve the information of your appointments from an Xml file (HospitaLine/xml/Appointments.xml) \n6) Change your password \n7) Delete your account \n8) Exit");
     			int option=Integer.parseInt(br.readLine());
     			switch(option)
     			{
@@ -587,6 +588,7 @@ public class Menu {
     				else
     				{
     					xmlman.Java2XmlAppointments(apos);
+    					System.out.println("\nYour appointments are in: HospitaLine/xml/Appointments.xml");
     				}
     				
     				
@@ -680,7 +682,7 @@ public class Menu {
     		{
     			Doctor doc=hospiman.getDoctorByEmail(user1.getEmail());
     			
-    			System.out.println("Hello Dr/a. "+user1.getUsername()+", what do you want to do? \n1) Appointments \n2) Medical records \n3) Medicine supply \n4) Export medicines info to an Xml file \n5) Retrieve medicines info from an Xml file \n6) Change your password \n7) Delete your account \n8) Exit");
+    			System.out.println("Hello Dr/a. "+user1.getUsername()+", what do you want to do? \n1) Appointments \n2) Medical records \n3) Medicine supply \n4) Export medicines to an Xml file \n5) Retrieve medicines from an Xml file (HospitaLine/xml/MedicinesImp.xml) to add them into the supply \n6) Export medicines to an HTML file \n7) Change your password \n8) Delete your account \n9) Exit");
     			int option=Integer.parseInt(br.readLine());
     			switch(option)
     			{
@@ -1048,15 +1050,36 @@ public class Menu {
     				else
     				{
     					xmlman.Java2XmlMedicines(meds);
+    					System.out.println("\nThis information has been stored in: HospitaLine/xml/MedicinesExp.xml");
     				}
     				
     				break;
     			case 5:
-    				ArrayList<MedicineSupply> medsin=xmlman.Xml2JavaMedicines();
-    				hospiman.AddMedicinesfromXml(medsin);
+    				try
+    				{
+    					ArrayList<MedicineSupply> medsin=xmlman.Xml2JavaMedicines();
+        				hospiman.AddMedicinesfromXml(medsin);
+    				}
+    				catch(UnmarshalException e)
+    				{
+    					System.out.println("\nThe file is empty or corrupted");
+    				}
     				
     				break;
     			case 6:
+    				ArrayList<MedicineSupply> medsache=hospiman.getAllMedicines();
+    				if(medsache.isEmpty())
+    				{
+    					System.out.println("\nThere are no medicines in the supply");
+    				}
+    				else
+    				{
+    					xmlman.Java2HTMLMedicines(medsache);
+    					System.out.println("\nThe HTML is in HospitaLine/xml/Medicines.html");
+    				}
+    				
+    				break;
+    			case 7:
     				System.out.println("\nWhat will your new password be?");
     				String newpass=br.readLine();
     				if(newpass.equals(""))
@@ -1077,7 +1100,7 @@ public class Menu {
     				}
     				
     				break;
-    			case 7:
+    			case 8:
     				System.out.println("\nIf you delete your account, you will be redirected to the principal menu, are you sure (press 1)?");
     				int deci=Integer.parseInt(br.readLine());
     				if(deci==1)
@@ -1088,7 +1111,7 @@ public class Menu {
     				}
     				
     				break;
-    			case 8:
+    			case 9:
     				keepsesiondoc=false;
     				break;
     			default:

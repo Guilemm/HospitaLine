@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Medicines>
+    <Medicine>
+        <id>17</id>
+        <name>queso manchego</name>
+        <quantity>2345.0</quantity>
+    </Medicine>
+    <Medicine>
+        <id>18</id>
+        <name>manuela</name>
+        <quantity>234.0</quantity>
+    </Medicine>
+    <Medicine>
+        <id>19</id>
+        <name>qw</name>
+        <quantity>1.0</quantity>
+    </Medicine>
+    <Medicine>
+        <id>35</id>
+        <name>queso manchego</name>
+        <quantity>2345.0</quantity>
+    </Medicine>
+    <Medicine>
+        <id>36</id>
+        <name>manuela</name>
+        <quantity>234.0</quantity>
+    </Medicine>
+    <Medicine>
+        <id>37</id>
+        <name>qw</name>
+        <quantity>1.0</quantity>
+    </Medicine>
+    <Medicine>
+        <id>38</id>
+        <name>queso manchego</name>
+        <quantity>2345.0</quantity>
+    </Medicine>
+    <Medicine>
+        <id>39</id>
+        <name>nada</name>
+        <quantity>23.0</quantity>
+    </Medicine>
+</Medicines>

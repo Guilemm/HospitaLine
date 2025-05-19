@@ -1,6 +1,7 @@
 package hospital.ifaces;
 
 import java.io.File;
+import javax.xml.bind.UnmarshalException;
 import java.util.ArrayList;
 
 import db.pojos.Appointment;
@@ -14,11 +15,10 @@ public interface XmlManager {
 	
 	public ArrayList<Appointment> Xml2JavaAppointments();
 	
-	//public void Java2XmlMedicalRecords(ArrayList<MedicalRecord> medrecs);
-	
-	//public ArrayList<MedicalRecord> Xml2JavaMedicalRecords();
-	
 	public void Java2XmlMedicines(ArrayList<MedicineSupply> meds);
 	
-	public ArrayList<MedicineSupply> Xml2JavaMedicines();
+	public ArrayList<MedicineSupply> Xml2JavaMedicines() throws UnmarshalException;
+	
+	public void Java2HTMLMedicines(ArrayList<MedicineSupply> meds);
+	
 }

@@ -746,62 +746,7 @@ public class HospitalManagerImplements implements HospitalManager {
         }
     }
     
-    
-    /*@Override
-    public void AddMedicalRecordsfromXml(ArrayList<MedicalRecord> medrecs)
-    {
-    	try
-    	{
-    		Statement stmt=c.createStatement();
-    		String sql="SELECT * FROM medrecords WHERE patientid="+medrecs.get(0).getPatientID();
-    		ResultSet rs=stmt.executeQuery(sql);
-    		ArrayList<MedicalRecord> medrecsbase=new ArrayList<MedicalRecord>();
-    		while(rs.next())
-    		{
-    			int id = rs.getInt("id");
-                String diagnose = rs.getString("diagnose");
-                String treatment = rs.getString("treatment");
-                long dobMillis = rs.getLong("date");
-                Date utilDate = new Date(dobMillis);
-                Integer medprescid;
-                int rawmedid=rs.getInt("medprescid");
-                if(rs.wasNull())
-                {
-                	medprescid=null;
-                }
-                else
-                {
-                	medprescid=rawmedid;
-                }
-                MedicalRecord medreco = new MedicalRecord(id, rs.getInt("patientid"), diagnose, treatment, utilDate, medprescid);//Para que esto funcione se necesita contructor de MedicalRecords
-                medrecsbase.add(medreco);
-    		}
-    		
-    		int i=0;
-    		while(i<medrecs.size())
-    		{
-    			if((!medrecsbase.contains(medrecs.get(i)))&&((medrecs.get(i).getPatientID()!=medrecsbase.get(i).getPatientID())||(!medrecs.get(i).getDiagnosis().equals(medrecsbase.get(i).getDiagnosis()))))
-    			{
-    				if(isMedicineAvailable(medrecs.get(i).getMedicineID()))
-    				{
-    					addMedicalRecord(medrecs.get(i));
-    				}
-    				
-    			}
-    			i++;
-    		}
-    	}
-    	catch(SQLException e)
-        {
-            e.printStackTrace();
-        }
-        catch (NumberFormatException e) {
-
-            e.printStackTrace();
-        }
-    }*/
-    
-    
+   
 
     @Override
     public boolean ClaimMedicine(int medrecidclaim, int patid)//Exclusivo de pacientes, habria que hacer que una vez reclamada la medicina no la pueda volver a reclamar, esto se comprobara viendo si el medprescid es NULL
