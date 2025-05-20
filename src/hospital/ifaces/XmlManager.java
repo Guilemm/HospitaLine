@@ -13,7 +13,7 @@ public interface XmlManager {
 	
 	public void Java2XmlAppointments(ArrayList<Appointment> apos);
 	
-	public ArrayList<Appointment> Xml2JavaAppointments();
+	public ArrayList<Appointment> Xml2JavaAppointments() throws UnmarshalException;
 	
 	public void Java2XmlMedicines(ArrayList<MedicineSupply> meds);
 	

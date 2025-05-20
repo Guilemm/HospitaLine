@@ -73,7 +73,7 @@ public class Menu {
 			}
 			catch (NumberFormatException e) {
 				
-				e.printStackTrace();
+				System.out.println("\nInvalid option");
 			} catch (IOException e) {
 				
 				e.printStackTrace();
@@ -599,6 +599,10 @@ public class Menu {
     					ArrayList<Appointment> aposin=xmlman.Xml2JavaAppointments();
         				hospiman.AddAppointmentsfromXml(aposin, pat.getId());
     				}
+    				catch(UnmarshalException e)
+    				{
+    					System.out.println("\nThe Xml file is empty or corrupted");
+    				}
     				catch(SQLException e)
     				{
     					System.out.println("\nThere are doctors or patients in the Xml appointments that does not exist");
@@ -648,7 +652,7 @@ public class Menu {
     		}
     		catch (NumberFormatException e) {
     			
-    			e.printStackTrace();
+    			System.out.println("\nInvalid option");
     		} catch (IOException e) {
     			
     			e.printStackTrace();
@@ -1062,7 +1066,7 @@ public class Menu {
     				}
     				catch(UnmarshalException e)
     				{
-    					System.out.println("\nThe file is empty or corrupted");
+    					System.out.println("\nThe Xml file is empty or corrupted");
     				}
     				
     				break;
@@ -1120,7 +1124,7 @@ public class Menu {
     		}
     		catch (NumberFormatException e) {
     			
-    			e.printStackTrace();
+    			System.out.println("\nInvalid option");
     		} catch (IOException e) {
     			
     			e.printStackTrace();

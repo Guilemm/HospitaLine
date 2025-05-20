@@ -103,7 +103,7 @@ public class XmlManagerImplements implements XmlManager{
 	}
 
 	@Override
-	public ArrayList<Appointment> Xml2JavaAppointments() {
+	public ArrayList<Appointment> Xml2JavaAppointments() throws UnmarshalException{
 		try
 		{
 			JAXBContext jaxbContext = JAXBContext.newInstance(AppointmentsList.class);
@@ -114,6 +114,10 @@ public class XmlManagerImplements implements XmlManager{
 			ArrayList<Appointment> aposreturn = new ArrayList<>(apos.getAppointment());
 			
 			return aposreturn;
+		}
+		catch(UnmarshalException e)
+		{
+			throw e;
 		}
 		catch (JAXBException e) {
 			// TODO Auto-generated catch block
