@@ -831,12 +831,11 @@ public class Menu {
     									}
     									if(disponibilidad)
     									{
-    										System.out.println("\nFrom this medicines, choose one to be prescribed");
-        									int medid=Integer.parseInt(br.readLine());
-        									boolean disponible=hospiman.isMedicineAvailable(medid);
-        									if(disponible)
-        									{
-        										MedicalRecord medrec=new MedicalRecord(patid, diagnose, treatment, Date.valueOf(LocalDate.now()), medid);
+    										System.out.println("\nFrom this medicines, choose one to be prescribed (if you dont want to prescribe anything, press enter)");
+    										String medidstr=br.readLine();
+    										if(medidstr.equals(""))
+    										{
+    											MedicalRecord medrec=new MedicalRecord(patid, diagnose, treatment, Date.valueOf(LocalDate.now()), null);
         										boolean added=hospiman.addMedicalRecord(medrec);
         										if(added)
         										{
@@ -846,11 +845,29 @@ public class Menu {
         										{
         											System.out.println("\nThe medical record was not added");
         										}
-        									}
-        									else
-        									{
-        										System.out.println("\nInvalid option");
-        									}
+    										}
+    										else
+    										{
+    											int medid=Integer.parseInt(medidstr);
+            									boolean disponible=hospiman.isMedicineAvailable(medid);
+            									if(disponible)
+            									{
+            										MedicalRecord medrec=new MedicalRecord(patid, diagnose, treatment, Date.valueOf(LocalDate.now()), medid);
+            										boolean added=hospiman.addMedicalRecord(medrec);
+            										if(added)
+            										{
+            											System.out.println("\nThe medical record was succesfully added");
+            										}
+            										else
+            										{
+            											System.out.println("\nThe medical record was not added");
+            										}
+            									}
+            									else
+            									{
+            										System.out.println("\nInvalid option");
+            									}
+    										}
     									}
     									else
     									{
@@ -939,26 +956,43 @@ public class Menu {
     										}
     										if(disponiblemod)
     										{
-    											System.out.println("\nFrom this medicines, choose one to be prescribed");
-        										int medid=Integer.parseInt(br.readLine());
-        										boolean disponible=hospiman.isMedicineAvailable(medid);
-        										if(disponible)
-        										{
-        											MedicalRecord medrec=new MedicalRecord(medupid, idpat, diagnose, treatment, Date.valueOf(LocalDate.now()), medid);
-        											boolean updated=hospiman.updateMedicalRecord(medrec);
-        											if(updated)
-        											{
-        												System.out.println("\nThe medical record was succesfully updated");
-        											}
-        											else
-        											{
-        												System.out.println("\nThe medical record was not updated");
-        											}
-        										}
-        										else
-        										{
-        											System.out.println("\nInvalid option");
-        										}
+    											System.out.println("\nFrom this medicines, choose one to be prescribed, if you dont want to prescribe anything, press enter");
+    											String medidstr=br.readLine();
+    											if(medidstr.equals(""))
+    											{
+    												MedicalRecord medrec=new MedicalRecord(medupid, idpat, diagnose, treatment, Date.valueOf(LocalDate.now()), null);
+    												boolean updated=hospiman.updateMedicalRecord(medrec);
+    	    										if(updated)
+    	    										{
+    	    											System.out.println("\nThe medical record was succesfully updated");
+    	    										}
+    	    										else
+    	    										{
+    	    											System.out.println("\nThe medical record was not updated");
+    	    										}
+    											}
+    											else
+    											{
+    												int medid=Integer.parseInt(medidstr);
+            										boolean disponible=hospiman.isMedicineAvailable(medid);
+            										if(disponible)
+            										{
+            											MedicalRecord medrec=new MedicalRecord(medupid, idpat, diagnose, treatment, Date.valueOf(LocalDate.now()), medid);
+            											boolean updated=hospiman.updateMedicalRecord(medrec);
+            											if(updated)
+            											{
+            												System.out.println("\nThe medical record was succesfully updated");
+            											}
+            											else
+            											{
+            												System.out.println("\nThe medical record was not updated");
+            											}
+            										}
+            										else
+            										{
+            											System.out.println("\nInvalid option");
+            										}
+    											}
     										}
     										else
     										{
