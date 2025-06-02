@@ -15,9 +15,7 @@ public class Patient implements Serializable{
 
 	
 	
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = -7074079287243196378L;
 	
 	private Integer id;

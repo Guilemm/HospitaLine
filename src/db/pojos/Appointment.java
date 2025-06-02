@@ -13,22 +13,18 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import hospital.xml.SQLDateAdapter;
 
-/*
- * Represents a medical appointment between a patient and a doctor on a specific date.
- */
+
 
 @XmlRootElement
 public class Appointment implements Serializable{
     private Integer id;
-    private Integer patientId;//coment
+    private Integer patientId;
     private Integer doctorId;
     private Date date;
     private Integer hour;
 
 
-    /*
-     * Constructor
-     */
+    
     public Appointment(int id, int patientId, int doctorId, Date date, int hour) {
         this.id = id;
         this.patientId = patientId;

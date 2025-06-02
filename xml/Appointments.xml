@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Appointments>
+    <Appointment>
+        <date>2029-09-08</date>
+        <doctorId>13</doctorId>
+        <hour>2</hour>
+        <id>48</id>
+        <patientId>17</patientId>
+    </Appointment>
+</Appointments>

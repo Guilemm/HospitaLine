@@ -14,7 +14,7 @@ public class AppointmentsList {
 	
 	private ArrayList<Appointment> appointments;
 	
-	@XmlElement(name="Appointment")//Cada appointment de la lista  
+	@XmlElement(name="Appointment")
     public ArrayList<Appointment> getAppointment() {
         return appointments;
     }

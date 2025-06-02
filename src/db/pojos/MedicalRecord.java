@@ -2,29 +2,19 @@ package db.pojos;
 
 import java.io.Serializable;
 
-
 import java.sql.Date;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import hospital.xml.SQLDateAdapter;
 
-/*
- * Represents a patient's medical history or visit record
- */
-
-@XmlRootElement
 public class MedicalRecord implements Serializable {
 
-    private Integer id; //unique id for the medical record, coment
-    private Integer patientID; //ID of the patient (foreign key)
-    private String diagnosis; //Diagnosis made during the visit
-    private String treatment;  //treatment prescribed
-    private Date date;  //date of the medical visit
-    private Integer medicineID;  //id of the medicine used (foreign key)
+    private Integer id; 
+    private Integer patientID; 
+    private String diagnosis; 
+    private String treatment;  
+    private Date date;  
+    private Integer medicineID;  
 
 
     public MedicalRecord(int id, int patientID, String diagnosis, String treatment, Date date, Integer medicineID) {
@@ -55,7 +45,6 @@ public class MedicalRecord implements Serializable {
     }
 
 
-    // Getters
 
     @Override
     public int hashCode() {
@@ -77,37 +66,36 @@ public class MedicalRecord implements Serializable {
     }
 
 
-    @XmlElement
+    
     public int getId() {
         return id;
     }
 
-    @XmlElement
+    
     public int getPatientID() {
         return patientID;
     }
 
-    @XmlElement
+    
     public String getDiagnosis() {
         return diagnosis;
     }
 
-    @XmlElement
+    
     public String getTreatment() {
         return treatment;
     }
 
-    @XmlJavaTypeAdapter(SQLDateAdapter.class)
+    
     public Date getDate() {
         return date;
     }
 
-    @XmlElement
+    
     public Integer getMedicineID() {
         return medicineID;
     }
 
-    // Setters
 
     public void setId(int id) {
         this.id = id;

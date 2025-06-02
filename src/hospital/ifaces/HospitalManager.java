@@ -15,7 +15,7 @@ import db.pojos.Patient;
 public interface HospitalManager {
 	
 
-	public boolean EliminateAppointment(int id, int patid);//Solo para el paciente
+	public boolean EliminateAppointment(int id, int patid);
 	
 	public boolean ModifyAppointment(int apoid, Appointment apo) throws SQLException;
 	
@@ -27,7 +27,7 @@ public interface HospitalManager {
 	
 	public void AddDoctor(Doctor doc);
 
-	public Doctor ViewDoctorInfo(int docidsee);//Este deberian ser dos, uno para ver a todos y otro para ver solo uno, usado por pacientes
+	public Doctor ViewDoctorInfo(int docidsee);
 
     public ArrayList<Doctor> ViewAllDoctors();
     
@@ -35,7 +35,7 @@ public interface HospitalManager {
     
     public ArrayList<Appointment> getAppointmentsPatient(int id);
 
-    public ArrayList<MedicalRecord> ViewAllMedicalRecords(int patid);//Patient y doctors, patient si es suyo, doctor si el patient tiene un appointment con el
+    public ArrayList<MedicalRecord> ViewAllMedicalRecords(int patid);
 
     public MedicalRecord ViewOneMedicalRecord(int medrecid, int patid);
     
@@ -64,8 +64,6 @@ public interface HospitalManager {
     public boolean VerifyMedicalRecord(int medrecid, int patid);
     
     public boolean updateMedicalRecord(MedicalRecord medrec);
-    
-    //public void AddMedicalRecordsfromXml(ArrayList<MedicalRecord> medrecs);
     
     public void AddMedicinesfromXml(ArrayList<MedicineSupply> meds);
     

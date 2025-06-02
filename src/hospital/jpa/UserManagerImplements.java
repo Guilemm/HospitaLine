@@ -25,7 +25,6 @@ public class UserManagerImplements implements UserManager
 		em.createNativeQuery("PRAGMA foreign_keys=ON").executeUpdate();
 		em.getTransaction().commit();
 		
-		//Para crear los roles, si la lista esta vacia significa que la databse no tiene esos roles, y entonces los meto
 		
 		if(this.getRoles().isEmpty())
 		{
@@ -56,11 +55,11 @@ public class UserManagerImplements implements UserManager
 	public User login(String email, String password) {
 		try
 		{
-			Query q=em.createNativeQuery("SELECT * FROM users WHERE email = ?", User.class);//Esto para ver si esta el user ya registrado, al buscar en la base de datos da igual que el nombre este en mayusculas
+			Query q=em.createNativeQuery("SELECT * FROM users WHERE email = ?", User.class);
 			q.setParameter(1, email);
-			User user= (User) q.getSingleResult();//Aqui estaria obteniendo la contraseña encriptada, si eso coincide con la contraseña que pone el usuario (password), entonces devuelvo el usuario
+			User user= (User) q.getSingleResult();
 			
-			if(encoder.matches(password, user.getPassword()))//Password es la contraseña en texto plano, que el user mete, y user.getPassword es la contraseña encriptada
+			if(encoder.matches(password, user.getPassword()))
 			{
 				return user;
 			}
@@ -70,7 +69,7 @@ public class UserManagerImplements implements UserManager
 			}
 			
 		}
-		catch(NoResultException e)//Retornara null si no hay ningun user con ese nombre y password
+		catch(NoResultException e)
 		{
 			return null;
 		}

@@ -47,7 +47,7 @@ public class XmlManagerImplements implements XmlManager{
 			
 		} 
 		catch (JAXBException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}
@@ -69,7 +69,7 @@ public class XmlManagerImplements implements XmlManager{
 				
 		} 
 		catch (JAXBException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		
@@ -94,7 +94,7 @@ public class XmlManagerImplements implements XmlManager{
 			throw e;
 		}
 		catch (Exception e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		
 		}
@@ -120,7 +120,7 @@ public class XmlManagerImplements implements XmlManager{
 			throw e;
 		}
 		catch (JAXBException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return null;

@@ -37,10 +37,9 @@ public class HospitalManagerImplements implements HospitalManager {
             c=DriverManager.getConnection("jdbc:sqlite:Database1.db");
             c.createStatement().execute("PRAGMA foreign_keys=ON");
 
-            //Aqui dentro del propio constructor deberia crear todas las tablas con createTables(), no se si es realmente necesario si ya estan hechas las tablas en la base de datos como tal
-            createTables();//Esto hace que me de error, de que ya existen esas tablas, obviamente, pero por el momento lo dejo, al no afectar al programa como tal
+            createTables();
             
-            //Metodo para que si hay appointments en el pasado de la fecha actual, estos se eliminen automaticamente
+            //This eliminates the past appointments automatically
             eliminatePastAppointments();
         }
         catch(SQLException e)
@@ -52,7 +51,7 @@ public class HospitalManagerImplements implements HospitalManager {
 
     }
 
-    private void createTables()//Hay que hacerlo(No muy seguro en realidad), primero doctros, luego patients, luego
+    private void createTables()
     {
         try
         {
@@ -110,7 +109,7 @@ public class HospitalManagerImplements implements HospitalManager {
             stmt5.close();
 
 
-            Statement stmtSeq = c.createStatement();//Por ahora para appointments y medrecords no voy a hacer esto, aunque habra que hacerlo muy probablemente
+            Statement stmtSeq = c.createStatement();
             String sqlSeq = "INSERT INTO sqlite_sequence (name, seq) VALUES ('doctors', 1)";
             stmtSeq.executeUpdate(sqlSeq);
             sqlSeq = "INSERT INTO sqlite_sequence (name, seq) VALUES ('patients', 1)";
@@ -217,7 +216,7 @@ public class HospitalManagerImplements implements HospitalManager {
             e.printStackTrace();
 
         }
-        catch(NullPointerException e)//Esta excepcion puede darla si la date es null, o si no hay doctor con esa id
+        catch(NullPointerException e)
         {
             e.printStackTrace();
         }
@@ -451,7 +450,7 @@ public class HospitalManagerImplements implements HospitalManager {
     }
 
     @Override
-    public boolean EliminateAppointment(int id, int patid)//Esto es un delete, cuando la id que le doy no existe no dice nada, no se si habria que arreglar eso
+    public boolean EliminateAppointment(int id, int patid)
     {
         try
         {
@@ -539,7 +538,7 @@ public class HospitalManagerImplements implements HospitalManager {
 
 
     @Override
-    public Doctor ViewDoctorInfo(int docidsee) //Este y el de view patient son SELECT, tambien el de view medrec, es mejor quitar lo de Doctor doc, y que solo reciba la id, o que se le pida la id en el propio metodo, igual seria en patient
+    public Doctor ViewDoctorInfo(int docidsee)
     {
         try {
 
@@ -571,7 +570,7 @@ public class HospitalManagerImplements implements HospitalManager {
 
             e.printStackTrace();
         }
-        catch(NullPointerException e)//Esta excepcion puede darla si la date es null, o si no hay doctor con esa id
+        catch(NullPointerException e)
         {
             e.printStackTrace();
         }
@@ -749,7 +748,7 @@ public class HospitalManagerImplements implements HospitalManager {
    
 
     @Override
-    public boolean ClaimMedicine(int medrecidclaim, int patid)//Exclusivo de pacientes, habria que hacer que una vez reclamada la medicina no la pueda volver a reclamar, esto se comprobara viendo si el medprescid es NULL
+    public boolean ClaimMedicine(int medrecidclaim, int patid)
     {
         try
         {
@@ -757,16 +756,16 @@ public class HospitalManagerImplements implements HospitalManager {
             Statement stmt=c.createStatement();
             String sql="SELECT medprescid FROM medrecords WHERE id="+ medrecidclaim+" AND patientid="+patid;
             ResultSet rs=stmt.executeQuery(sql);
-            rs.getInt("medprescid");//Primero obtengo el valor que quiero comprobar si es null, y luego ya una vez tengo el valor que quiero comprobar, en este caso medprescid, hago el .wasNull()
-            if(rs.wasNull())//Esto es para ver si medprescid es null, no se puede hacer medprescid ==null, porque en ese caso devuelve 0 la base de datos, hay que hacer esto para comprobar si era null
+            rs.getInt("medprescid");
+            if(rs.wasNull())
             {
                 stmt.close();
                 rs.close();
                 return false;
             }
-            else//En caso de si poder reclamar la medicina, primero quitar el medicine supply, y u8na vez hecho eso automticamnente se vuelve null el medprescid
+            else
             {
-                String sql2="DELETE FROM medsupply WHERE id = (SELECT medprescid FROM medrecords WHERE id= ? )";//Aqui no hace falta comprobar id del paciente, ya que ya la he comprobado arriba
+                String sql2="DELETE FROM medsupply WHERE id = (SELECT medprescid FROM medrecords WHERE id= ? )";
                 PreparedStatement prep=c.prepareStatement(sql2);
                 prep.setInt(1, medrecidclaim);
                 prep.executeUpdate();

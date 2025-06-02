@@ -8,9 +8,7 @@ import javax.persistence.*;
 @Table(name="users")
 public class User implements Serializable{
 
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -2130683098321287710L;
 	
 	@Id
@@ -18,7 +16,7 @@ public class User implements Serializable{
 	@TableGenerator(name = "users", table = "sqlite_sequence",
 		pkColumnName = "name", valueColumnName = "seq", pkColumnValue = "users")
 	private Integer id;
-	private String username;//Preguntar si realmente esto como algo unico es buena idea
+	private String username;
 	private String password;
 	@Column(unique =true)
 	private String email;
@@ -70,7 +68,5 @@ public class User implements Serializable{
 		return password;
 	}
 
-	
-	
 	
 }

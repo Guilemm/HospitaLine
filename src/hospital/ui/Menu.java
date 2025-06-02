@@ -34,7 +34,7 @@ public class Menu {
 	private static UserManagerImplements userman;
 	private static XmlManager xmlman=new XmlManagerImplements();
 	
-	public static void main(String args[])//Asi no se va a quedar el menu, es para probar lo metodos
+	public static void main(String args[])
 	{
 		hospiman=new HospitalManagerImplements();
 		userman=new UserManagerImplements();
@@ -61,7 +61,7 @@ public class Menu {
 					login();
 					break;
 				case 4:
-					hospiman.CloseConnection();//Si se pone esto se cierra la conexion por eso al final esta puesto
+					hospiman.CloseConnection();
 					userman.close();
 					keep=false;
 					break;
@@ -161,7 +161,7 @@ public class Menu {
 		{
 			System.out.println("\nInvalid date format, use (yyyy-MM-dd)");
 		}
-		catch(Exception e)//Esto para cuando haya un username igual
+		catch(Exception e)
 		{
 			if(e.getMessage().contains("(UNIQUE constraint failed: users.EMAIL)"))
 			{
@@ -233,7 +233,7 @@ public class Menu {
 		{
 			System.out.println("\nInvalid date format, use (yyyy-MM-dd)");
 		}
-		catch(Exception e)//Esto para cuando haya un username igual
+		catch(Exception e)
 		{
 			if(e.getMessage().contains("(UNIQUE constraint failed: users.EMAIL)"))
 			{
@@ -661,7 +661,7 @@ public class Menu {
     		{
     			e.printStackTrace();
     		}
-    		catch(Exception e)//Lo suyo será separar bloque doctors y patients en dos public voids
+    		catch(Exception e)
     		{
     			if(e.getMessage().contains("could not be parsed"))
     			{
@@ -686,7 +686,7 @@ public class Menu {
     		{
     			Doctor doc=hospiman.getDoctorByEmail(user1.getEmail());
     			
-    			System.out.println("Hello Dr/a. "+user1.getUsername()+", what do you want to do? \n1) Appointments \n2) Medical records \n3) Medicine supply \n4) Export medicines to an Xml file \n5) Retrieve medicines from an Xml file (HospitaLine/xml/MedicinesImp.xml) to add them into the supply \n6) Export medicines to an HTML file \n7) Change your password \n8) Delete your account \n9) Exit");
+    			System.out.println("Hello Dr. "+user1.getUsername()+", what do you want to do? \n1) Appointments \n2) Medical records \n3) Medicine supply \n4) Export medicines to an Xml file \n5) Retrieve medicines from an Xml file (HospitaLine/xml/MedicinesImp.xml) to add them into the supply \n6) Export medicines to an HTML file \n7) Change your password \n8) Delete your account \n9) Exit");
     			int option=Integer.parseInt(br.readLine());
     			switch(option)
     			{
@@ -824,7 +824,7 @@ public class Menu {
     										if(disponible)
     										{
     											System.out.println(meds.get(k).toString());
-    											disponibilidad=true;//Se habra metido aqui al menos una vez y habra medicina que añadir
+    											disponibilidad=true;
     										}
     										
     										k++;
@@ -927,7 +927,7 @@ public class Menu {
     									if(meds.isEmpty())
     									{
     										System.out.println("\nThere are no medicines in the supply to add, so the medicine prescribed will for now be not specified, until this record is modified");
-    										MedicalRecord medrec=new MedicalRecord(medupid, idpat, diagnose, treatment, Date.valueOf(LocalDate.now()), null);//Al update a medical record se pone la fecha de modificacion en la date
+    										MedicalRecord medrec=new MedicalRecord(medupid, idpat, diagnose, treatment, Date.valueOf(LocalDate.now()), null);
     										
     										boolean updated=hospiman.updateMedicalRecord(medrec);
     										if(updated)
@@ -1167,7 +1167,7 @@ public class Menu {
     		{
     			e.printStackTrace();
     		}
-    		catch(Exception e)//Lo suyo será separar bloque doctors y patients en dos public voids
+    		catch(Exception e)
     		{
     			if(e.getMessage().contains("could not be parsed"))
     			{

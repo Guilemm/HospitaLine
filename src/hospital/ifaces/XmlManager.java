@@ -21,4 +21,5 @@ public interface XmlManager {
 	
 	public void Java2HTMLMedicines(ArrayList<MedicineSupply> meds);
 	
+	
 }

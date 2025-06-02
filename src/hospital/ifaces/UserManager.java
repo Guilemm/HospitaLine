@@ -7,7 +7,7 @@ import db.pojos.User;
 
 public interface UserManager {
 	
-	public User login(String name, String password);//Going to check if the user with that password exists in the database, aqui checkeamos el role, y dependiendo del role le enseñamos un menu u otro
+	public User login(String name, String password);
 	
 	public List<Role> getRoles();
 

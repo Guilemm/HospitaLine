@@ -13,16 +13,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class MedicineSupply implements Serializable{
-    /**
-     *
-     */
+   
+	
     private static final long serialVersionUID = 4119697357748661386L;
-    /*
-     * Represents a medicine and its stock level.
-     */
+    
+    
     private Integer id;
-    private String name; //name of the medicine
-    private Float quantity; //amount of medicine in stock
+    private String name; 
+    private Float quantity; 
 
     
 
@@ -45,10 +43,6 @@ public class MedicineSupply implements Serializable{
 		this.name = name;
 		this.quantity = quantity;
 	}
-
-
-
-
 
 
 
@@ -89,7 +83,6 @@ public class MedicineSupply implements Serializable{
         return quantity;
     }
 
-    // Setters
 
     public void setId(int id) {
         this.id = id;
