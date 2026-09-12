@@ -20,15 +20,17 @@ A console-based hospital management system built in Java, developed as an academ
 
 ## Project Structure
 
+```
 src/
 ├── hospital/
-│ ├── ui/ → Menu.java (application entry point / console UI)
-│ ├── jdbc/ → JDBC-based data access layer
-│ ├── jpa/ → JPA-based user management
-│ ├── xml/ → XML import/export logic
-│ └── ifaces/ → Interfaces for managers
-├── db/pojos/ → Entity classes (User, Patient, Doctor, Appointment, MedicalRecord, MedicineSupply, Role)
-└── META-INF/ → JPA persistence configuration
+│   ├── ui/        → Menu.java (application entry point / console UI)
+│   ├── jdbc/       → JDBC-based data access layer
+│   ├── jpa/        → JPA-based user management
+│   ├── xml/        → XML import/export logic
+│   └── ifaces/     → Interfaces for managers
+├── db/pojos/       → Entity classes (User, Patient, Doctor, Appointment, MedicalRecord, MedicineSupply, Role)
+└── META-INF/       → JPA persistence configuration
+```
 
 
 Additional design documentation (ER diagram, UML class diagram, use case diagram, UI mockups, and requirements traceability matrix) is available under `Tables and Diagrams/`.
@@ -54,5 +56,9 @@ The application connects to a local SQLite database (`Database1.db`) included in
 - `System's intent and features/Summary of System's Intent.pdf` — project overview and scope
 
 ## Authors
+
+- Diana Bravo
+- Teresa Rodríguez
+- Guillermo Lozano
 
 Team project developed for the Databases course, Biomedical Engineering degree, CEU San Pablo University.
