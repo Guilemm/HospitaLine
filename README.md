@@ -52,8 +52,8 @@ The application connects to a local SQLite database (`Database1.db`) included in
 ## Documentation
 
 - `Manuals/System Manual.pdf` — technical/system documentation
-- `Manuals/User's Manual.pdf` — end-user guide
-- `System's intent and features/Summary of System's Intent.pdf` — project overview and scope
+- `Manuals/Users Manual.pdf` — end-user guide
+- `Systems intent and features/Summary of Systems Intent.pdf` — project overview and scope
 
 ## Authors
 
